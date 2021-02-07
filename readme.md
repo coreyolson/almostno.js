@@ -2,7 +2,7 @@
 
 ## Minimalist JS Library
 
-Designed for inline use. Approximately 1.4 KB gzipped. Modern browsers.
+Designed for (optional) inline use. Approximately 1.5 KB gzipped. Modern browsers.
 
 # License
 
