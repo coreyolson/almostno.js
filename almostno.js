@@ -4,8 +4,7 @@
  * Released via MIT license
  */
 
-var _v = 0.9;
-
+// Version 0.9.3
 
 /**
  * Almost Nothing - Selector
@@ -24,6 +23,7 @@ var _v = 0.9;
  * $('.selector').parent()                      // Traverse: Parent
  * $('.selector').children()                    // Traverse: Children
  * $('.selector').siblings()                    // Traverse: Siblings
+ * $('.selector').closest()                     // Traverse: Ancestors
  * $('.selector').insert([element], [position]) // Insert: Before, Prepend, Append, After
  * $('.selector').class([class], [boolean])     // Element: Add (true); Remove (false) Class
  * $('.selector').display([boolean])            // Element: Show (true); Hide (false) Element
@@ -62,10 +62,16 @@ var $ = function(query){
     var [w,d,el,object] = [window,document,,{
 
         // Selector
-        _ = q => ( ! query )
+        _ = q => ( ! query ) ? 0
 
-            // Query selection if provided
-            ? 0 : d.querySelectorAll(query),
+            // Detect "this" or Selector
+            : ( typeof query === 'object' )
+
+                // Object "this"
+                ? el = [query]
+
+                // Query selection
+                : d.querySelectorAll(query),
 
         // Iterator
         i = (element,fn) => element.forEach(
@@ -142,10 +148,10 @@ var $ = function(query){
 
             // Translation
             var positions = {
-                'before' : 'beforebegin',
-                'prepend': 'afterbegin',
-                'append' : 'beforeend',
-                'after'  : 'afterend',
+                'before' : 'beforeBegin',
+                'prepend': 'afterBegin',
+                'append' : 'beforeEnd',
+                'after'  : 'afterEnd',
             };
 
             // Iterate
@@ -190,7 +196,7 @@ var $ = function(query){
         prop(name, text = null, str = '') {
 
             // Set
-            if ( text ) {
+            if ( text !== null ) {
 
                 // Update
                 object.i( el, i => i[name] = text );
@@ -242,10 +248,10 @@ var $ = function(query){
             (remove)
 
                 // Remove Attribute
-                ? el[0].removeAttribute(name)
+                ? object.i( el, i => i.removeAttribute(name) )
 
                 // Set Attribute
-                : ( value!==null ) ? el[0].setAttribute(name, value) : 0;
+                : ( value!==null ) ? object.i( el, i => i.setAttribute(name, value) ) : 0;
 
             // Get Attribute
             return el[0].getAttribute(name);
@@ -274,8 +280,8 @@ var $ = function(query){
                     }
                 }
 
-            // Active
-            }, false);
+            // Passive
+            }, true);
 
             // Chain
             return this;
@@ -293,8 +299,8 @@ var $ = function(query){
             // On
             } else {
 
-                // Add Listeners
-                object.i( el, i => i.addEventListener(event, mixed) );
+                // Add Listeners (Passive)
+                object.i( el, i => i.addEventListener(event, mixed, true) );
             }
 
             // Chain
@@ -435,6 +441,15 @@ var $ = function(query){
             // Chain
             return this;
         },
+
+        // Raw Element (Single)
+        element = e => el[0],
+
+        // Raw Element (Plural)
+        elements = e => el,
+
+        // Clone
+        clone = clone => el[0].cloneNode(true),
 
         // Focus
         focus = focus => el[0].focus(),
