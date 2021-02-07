@@ -68,7 +68,7 @@
             : ( typeof query === 'object' )
 
                 // Object "this"
-                ? el = [query]
+                ? this.el = [query]
 
                 // Query selection
                 : document.querySelectorAll(query)
