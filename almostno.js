@@ -4,7 +4,7 @@
  * Released via MIT license
  */
 
- // Version 0.9.5
+ // Version 0.9.6
 
 // Closure
 (function(w) {
@@ -80,7 +80,7 @@
     // Iterator
     AnJS.prototype.iterator = function(element, fn) {
 
-        //
+        // Iterate
         element.forEach(
 
             // Do Function
@@ -589,6 +589,13 @@
 
         // Convenience
         return arr.indexOf(needle);
+    };
+
+    // Extend
+    $.extend = function(name, func) {
+
+        // Attach
+        $[name] = func;
     };
 
     /**
