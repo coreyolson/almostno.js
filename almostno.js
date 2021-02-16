@@ -88,6 +88,17 @@
         )
     },
 
+    // Iterator
+    AnJS.prototype.each = function(fn) {
+
+        // Iterate
+        this.el.forEach(
+
+            // Do Function
+            index => fn(index)
+        )
+    },
+
     // Count Selected
     AnJS.prototype.length = function() {
 
