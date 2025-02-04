@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnJS DOM Test</title>
+    <script src="../dist/almostno.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .highlight {
+            background-color: yellow;
+        }
+
+        #box {
+            width: 150px;
+            height: 150px;
+            background: steelblue;
+            color: white;
+            text-align: center;
+            line-height: 150px;
+            margin: 20px;
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>DOM Manipulation Test</h1>
+
+    <!-- Test Element -->
+    <div id="box">AnJS Box</div>
+
+    <!-- Buttons to Modify Content & Style -->
+    <button data-on="click:changeText">Change Text</button>
+    <button data-on="click:changeHtml">Change HTML</button>
+    <button data-on="click:toggleClass">Toggle Class</button>
+    <button data-on="click:changeColor">Change Color</button>
+    <button data-on="click:insertElement">Insert Element</button>
+    <button data-on="click:removeElement">Remove Box</button>
+
+    <script>
+        // Select the box element
+        const box = $("#box");
+
+        // Define actions
+        const actions = {
+            changeText() {
+                box.text("Updated Text");
+            },
+            changeHtml() {
+                box.html("<strong>Updated <em>HTML</em></strong>");
+            },
+            toggleClass() {
+                box.class("highlight");
+            },
+            changeColor() {
+                // Generate random color
+                const randomColor = "#" + Math.floor(Math.random() * 16777215).toString(16);
+                box.css("background", randomColor);
+            },
+            insertElement() {
+                box.insert('<p>New Inserted Element</p>', 'after');
+            },
+            removeElement() {
+                box.remove();
+            }
+        };
+
+        // Bind actions to buttons
+        $("body").bind(actions);
+    </script>
+
+</body>
+
+</html>

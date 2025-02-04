@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnJS Utilities Test</title>
+    <script src="../dist/almostno.js"></script>
+</head>
+
+<body>
+
+    <h1>Testing AnJS Utilities</h1>
+
+    <!-- Trim Example with Input -->
+    <label for="trim-input">Enter text with spaces:</label>
+    <input type="text" id="trim-input" value="   Hello, World!   ">
+    <button id="trim-btn">Trim</button>
+    <p>Trimmed Output: <span id="trimmed"></span></p>
+
+    <!-- JSON Parse Example -->
+    <p>Raw JSON: <code id="raw-json">{"name": "AnJS", "version": "0.9.8"}</code></p>
+    <p>Parsed JSON Name: <span id="parsed-name"></span></p>
+
+    <!-- Range Example -->
+    <p>Check if 15 is between 10 and 20: <span id="range-check"></span></p>
+
+    <script>
+        // Trim Example with Button Click
+        $("#trim-btn").on("click", function () {
+            const inputText = $("#trim-input").val();
+            $("#trimmed").text($.trim(inputText));
+        });
+
+        // JSON Example
+        const rawJson = $("#raw-json").text();
+        const parsed = $.json(rawJson);
+        if (parsed) {
+            $("#parsed-name").text(parsed.name);
+        }
+
+        // Range Example
+        const isInRange = $.range(15, 10, 20);
+        $("#range-check").text(isInRange ? "✅ Yes" : "❌ No");
+    </script>
+
+</body>
+
+</html>

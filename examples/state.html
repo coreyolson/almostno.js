@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnJS State Test</title>
+    <script src="../dist/almostno.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        button {
+            margin: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>State Management Test</h1>
+
+    <div id="app">
+        <!-- Data binding -->
+        <p>Message: <span data-bind="message"></span></p>
+
+        <!-- Attribute binding -->
+        <input type="text" placeholder="Type something..." data-bind-attr="value:message">
+
+        <!-- Button to change state -->
+        <button data-on="click:changeMessage">Change Message</button>
+
+        <!-- Counter Test -->
+        <p>Counter: <span data-bind="count"></span></p>
+        <button data-on="click:increment">+1</button>
+        <button data-on="click:decrement">-1</button>
+    </div>
+
+    <script>
+        // Create and auto-bind state to #app
+        const appState = $("#app").state({
+            message: "Hello, AnJS!",
+            count: 0,
+
+            // Methods
+            changeMessage() {
+                this.message = "Updated: " + $.trim(this.message);
+            },
+            increment() {
+                this.count++;
+            },
+            decrement() {
+                this.count--;
+            }
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnJS Core Test</title>
+    <script src="../dist/almostno.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .box {
+            width: 100px;
+            height: 100px;
+            background: steelblue;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>AnJS Core Example</h1>
+
+    <!-- Test Elements -->
+    <div class="box">Box 1</div>
+    <div class="box">Box 2</div>
+    <div class="box">Box 3</div>
+
+    <!-- Buttons to Test Core Methods -->
+    <button data-on="click:logElements">Log Elements</button>
+    <button data-on="click:iterateElements">Iterate Elements</button>
+    <button data-on="click:getFirstElement">Get First Element</button>
+    <button data-on="click:cloneFirstElement">Clone First Element</button>
+    <button data-on="click:addMethod">Add Custom Method</button>
+
+    <script>
+        // Select elements
+        const boxes = $(".box");
+
+        // Define test actions
+        const actions = {
+            logElements() {
+                console.log(boxes.get()); // Log all selected elements
+            },
+            iterateElements() {
+                boxes.each(el => console.log("Element:", el.textContent)); // Iterate and log
+            },
+            getFirstElement() {
+                console.log("First Element:", boxes.get(0)); // Log first element
+            },
+            cloneFirstElement() {
+                const clone = boxes.get(0)?.cloneNode(true); // Clone first box
+                if (clone) document.body.appendChild(clone);
+            },
+            addMethod() {
+                $.extend("changeColor", function (color) {
+                    this.each(el => el.style.background = color);
+                    return this;
+                });
+
+                boxes.changeColor("tomato"); // Apply new method
+            }
+        };
+
+        // Bind actions
+        $("body").bind(actions);
+    </script>
+
+</body>
+
+</html>

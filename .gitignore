@@ -1,0 +1,27 @@
+# Environment
+.env
+
+# Directories
+node_modules/
+
+# Testing
+/coverage
+/jest
+
+# Editors
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Temporary
+*.tmp
+*.swp
+*.swpx
+*~

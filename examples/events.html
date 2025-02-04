@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnJS Events Test</title>
+    <script src="../dist/almostno.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: steelblue;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .box {
+            width: 100px;
+            height: 100px;
+            background: lightgray;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px;
+            border: 1px solid #333;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>AnJS Event Handling</h1>
+
+    <!-- Buttons to Attach and Remove Events -->
+    <button class="btn" data-on="click:addEvent">Attach Event</button>
+    <button class="btn" data-on="click:removeEvent">Remove Event</button>
+    <button class="btn" data-on="click:triggerEvent">Trigger Event</button>
+
+    <!-- Box that will change color when clicked -->
+    <div class="box" id="box">Click Me</div>
+
+    <!-- Delegated Event Test -->
+    <button class="btn" id="addBox">Add Box</button>
+    <div id="container"></div>
+
+    <script>
+        // Select elements
+        const container = $("#container");
+
+        // Actions object with event handlers
+        const actions = {
+            addEvent() {
+                $("#box").on("click", function () {
+                    $(this).css("background", "tomato");
+                    console.log("Box clicked!");
+                });
+                console.log("Event Attached!");
+            },
+            removeEvent() {
+                $("#box").off("click");
+                console.log("Event Removed!");
+            },
+            triggerEvent() {
+                $("#box").trigger("click");
+                console.log("Event Triggered!");
+            },
+            addBox() {
+                // Create a new div with class "box"
+                const newBox = document.createElement("div");
+                newBox.className = "box";
+                newBox.textContent = "New Box";
+
+                // Append to #container correctly
+                $("#container").insert(newBox, "append");
+
+                console.log("New Box Added!");
+            }
+        };
+
+        // Ensure event delegation works on dynamically added boxes
+        container.on("click", ".box", function () {
+            $(this).css("background", "limegreen");
+            console.log("Delegated Event Fired on:", this);
+        });
+
+        // Bind delegated event
+        $("#addBox").on("click", actions.addBox);
+
+        // Bind actions
+        $("body").bind(actions);
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnJS Animation Test</title>
+    <script src="../dist/almostno.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        #box {
+            width: 100px;
+            height: 100px;
+            background: steelblue;
+            margin: 20px;
+        }
+
+        button {
+            margin: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Animation Test</h1>
+
+    <!-- Animated Box -->
+    <div id="box"></div>
+
+    <!-- Controls -->
+    <button data-on="click:fadeInBox">Fade In</button>
+    <button data-on="click:fadeOutBox">Fade Out</button>
+    <button data-on="click:moveBox">Move</button>
+    <button data-on="click:scaleBox">Scale</button>
+    <button data-on="click:resetBox">Reset</button>
+
+    <script>
+        // Get the box element
+        const box = $("#box");
+
+        // Define actions
+        const actions = {
+            fadeInBox() {
+                box.fadeIn(500);
+            },
+            fadeOutBox() {
+                box.fadeOut(500);
+            },
+            moveBox() {
+                box.animate({ transform: "translateX(100px)" }, 500);
+            },
+            scaleBox() {
+                box.animate({ transform: "scale(1.5)" }, 500);
+            },
+            resetBox() {
+                box.animate({ transform: "none", opacity: 1 }, 500);
+            }
+        };
+
+        // Bind actions to buttons
+        $("body").bind(actions);
+    </script>
+
+</body>
+
+</html>

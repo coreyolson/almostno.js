@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnJS Examples</title>
+    <script src="../dist/almostno.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        #clock {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            margin: 10px 0;
+        }
+
+        a {
+            text-decoration: none;
+            color: steelblue;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Welcome to AnJS Examples</h1>
+
+    <!-- Live Clock -->
+    <div id="clock" data-bind="time"></div>
+
+    <ul>
+        <li><a href="animate.html">Animations</a></li>
+        <li><a href="attributes.html">Attributes</a></li>
+        <li><a href="core.html">Core Features</a></li>
+        <li><a href="dom.html">DOM Manipulation</a></li>
+        <li><a href="events.html">Events</a></li>
+        <li><a href="filtering.html">Filtering</a></li>
+        <li><a href="request.html">HTTP Requests</a></li>
+        <li><a href="state.html">State Management</a></li>
+        <li><a href="traversal.html">DOM Traversal</a></li>
+        <li><a href="utilities.html">Utilities</a></li>
+    </ul>
+
+    <script>
+        // Create and bind state to #clock
+        const clockState = $("#clock").state({
+            time: 'Loading...'
+        });
+
+        // Update the clock every second
+        setInterval(() => {
+            clockState.time = new Date().toLocaleTimeString();
+        }, 1000);
+    </script>
+
+</body>
+
+</html>

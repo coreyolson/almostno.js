@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnJS Request Example</title>
+    <script src="../dist/almostno.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: auto;
+            text-align: center;
+        }
+
+        input,
+        button {
+            margin: 10px;
+            padding: 10px;
+            width: 90%;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            background: #f0f0f0;
+            white-space: pre-wrap;
+            /* Preserve JSON formatting */
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>AnJS Request Example</h1>
+
+        <!-- Fetch User Data -->
+        <button id="getUser" data-on="click:getUser">Fetch User</button>
+
+        <!-- Post Data -->
+        <input type="text" id="nameInput" placeholder="Enter name">
+        <button id="postUser" data-on="click:postUser">Submit Name</button>
+
+        <!-- Response Output -->
+        <div class="result" id="output">Response will appear here...</div>
+    </div>
+
+    <script>
+        // Reference to output div
+        const output = $("#output");
+
+        // Define actions
+        const actions = {
+            getUser() {
+                $.get("https://jsonplaceholder.typicode.com/users/1")
+                    .then(data => {
+                        output.text(JSON.stringify(data, null, 2));
+                    })
+                    .catch(() => {
+                        output.text("Error fetching user");
+                    });
+            },
+            postUser() {
+                const name = $("#nameInput").val().trim();
+                if (!name) {
+                    output.text("Please enter a name.");
+                    return;
+                }
+
+                $.post("https://jsonplaceholder.typicode.com/users", { name })
+                    .then(data => {
+                        output.text(`User Created:\n${JSON.stringify(data, null, 2)}`);
+                    })
+                    .catch(() => {
+                        output.text("Error creating user");
+                    });
+            }
+        };
+
+        // Bind actions
+        $("body").bind(actions);
+    </script>
+
+</body>
+
+</html>

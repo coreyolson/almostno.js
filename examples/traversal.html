@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnJS Traversal Test</title>
+    <script src="../dist/almostno.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            border: 2px solid #333;
+            padding: 10px;
+            width: 300px;
+        }
+
+        .box {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            background: lightgray;
+            text-align: center;
+            border: 1px solid #000;
+        }
+
+        .highlight {
+            background: tomato !important;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>AnJS Element Traversal</h1>
+
+    <div class="container">
+        <div class="box">Box 1</div>
+        <div class="box">Box 2</div>
+        <div class="box">Box 3</div>
+        <div class="box">Box 4</div>
+    </div>
+
+    <button id="next">Next</button>
+    <button id="prev">Previous</button>
+    <button id="parent">Parent</button>
+    <button id="children">Children</button>
+    <button id="siblings">Siblings</button>
+    <button id="closest">Closest Container</button>
+    <button id="reset">Reset</button>
+
+    <script>
+        // Select the first box
+        let selected = $(".box").first();
+
+        // Actions for traversal
+        const actions = {
+            next() {
+                selected = selected.next();
+                actions.highlight();
+            },
+            prev() {
+                selected = selected.prev();
+                actions.highlight();
+            },
+            parent() {
+                selected = selected.parent();
+                actions.highlight();
+            },
+            children() {
+                selected = $(".container").children();
+                actions.highlight();
+            },
+            siblings() {
+                selected = $(".box").first().siblings();
+                actions.highlight();
+            },
+            closest() {
+                selected = $(".box").first().closest(".container");
+                actions.highlight();
+            },
+            highlight() {
+                $(".box, .container").class("highlight", false);
+                selected.class("highlight", true);
+            },
+            reset() {
+                $(".box, .container").class("highlight", false);
+                selected = $(".box").first();
+            }
+        };
+
+        // Attach event handlers
+        $("#next").on("click", actions.next);
+        $("#prev").on("click", actions.prev);
+        $("#parent").on("click", actions.parent);
+        $("#children").on("click", actions.children);
+        $("#siblings").on("click", actions.siblings);
+        $("#closest").on("click", actions.closest);
+        $("#reset").on("click", actions.reset);
+    </script>
+
+</body>
+
+</html>

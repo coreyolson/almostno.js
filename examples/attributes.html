@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnJS Attribute Test</title>
+    <script src="../dist/almostno.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        #test-box {
+            width: 100px;
+            height: 100px;
+            border: 1px solid #333;
+            margin: 2rem;
+            padding: 2rem;
+        }
+
+        button {
+            margin: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Attribute Test</h1>
+
+    <!-- Test Element -->
+    <div id="test-box" data-info="original">Attribute Box</div>
+
+    <!-- Buttons to Modify Attributes -->
+    <button data-on="click:getId">Get ID</button>
+    <button data-on="click:setId">Set ID</button>
+    <button data-on="click:getAttr">Get Data-Info</button>
+    <button data-on="click:setAttr">Set Data-Info</button>
+    <button data-on="click:removeAttr">Remove Data-Info</button>
+
+    <!-- Form Test -->
+    <form id="test-form">
+        <input type="text" name="name" value="AnJS">
+        <input type="email" name="email" value="test@example.com">
+    </form>
+    <button data-on="click:serializeForm">Serialize Form</button>
+
+    <script>
+        // Select element
+        const box = $("#test-box");
+
+        // Define actions
+        const actions = {
+            getId() {
+                alert(`ID: ${box.id()}`);
+            },
+            setId() {
+                box.id("new-box");
+            },
+            getAttr() {
+                alert(`Data-Info: ${box.attr("data-info")}`);
+            },
+            setAttr() {
+                box.attr("data-info", "updated");
+            },
+            removeAttr() {
+                box.removeAttr("data-info");
+            },
+            serializeForm() {
+                alert($("#test-form").serialize());
+            }
+        };
+
+        // Bind actions to buttons
+        $("body").bind(actions);
+    </script>
+
+</body>
+
+</html>

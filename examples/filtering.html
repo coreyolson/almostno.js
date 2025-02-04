@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnJS Filtering & Traversal Test</title>
+    <script src="../dist/almostno.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .list-item {
+            padding: 10px;
+            border: 1px solid #333;
+            margin: 5px;
+            display: inline-block;
+            background: lightgray;
+        }
+
+        .highlight {
+            background: tomato !important;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>AnJS Filtering & Traversal</h1>
+
+    <!-- List of items -->
+    <div id="list">
+        <div class="list-item">Item 1</div>
+        <div class="list-item">Item 2</div>
+        <div class="list-item">Item 3</div>
+        <div class="list-item">Item 4</div>
+        <div class="list-item">Item 5</div>
+        <div class="list-item">Item 6</div>
+    </div>
+
+    <button id="filter-even">Highlight Even</button>
+    <button id="filter-odd">Highlight Odd</button>
+    <button id="find-items">Find Items</button>
+    <button id="first-item">First Item</button>
+    <button id="last-item">Last Item</button>
+    <button id="reset">Reset</button>
+
+    <script>
+        // Select elements
+        const listItems = $("#list .list-item");
+
+        // Event actions
+        const actions = {
+            filterEven() {
+                listItems.even().class("highlight", true);
+            },
+            filterOdd() {
+                listItems.odd().class("highlight", true);
+            },
+            findItems() {
+                $("#list").find(".list-item").class("highlight", true);
+            },
+            firstItem() {
+                listItems.first().class("highlight", true);
+            },
+            lastItem() {
+                listItems.last().class("highlight", true);
+            },
+            reset() {
+                listItems.class("highlight", false);
+            }
+        };
+
+        // Bind events
+        $("#filter-even").on("click", actions.filterEven);
+        $("#filter-odd").on("click", actions.filterOdd);
+        $("#find-items").on("click", actions.findItems);
+        $("#first-item").on("click", actions.firstItem);
+        $("#last-item").on("click", actions.lastItem);
+        $("#reset").on("click", actions.reset);
+    </script>
+
+</body>
+
+</html>
