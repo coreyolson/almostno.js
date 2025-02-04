@@ -1,19 +1,9 @@
-// -------------------------------------------
-// Build Script for AnJS
-// -------------------------------------------
-
 // Dependencies
 import esbuild from 'esbuild';
 import fs from 'fs';
 import zlib from 'zlib';
 
-// -------------------------------------------
-// Build Configuration
-// -------------------------------------------
-
-/**
- * Build options for esbuild
- */
+// Configuration
 const buildOptions = {
 
     // Entry point for the build
@@ -28,10 +18,6 @@ const buildOptions = {
     // Target modern browsers
     target: ['es2020'],
 };
-
-// -------------------------------------------
-// File Size Utility
-// -------------------------------------------
 
 /**
  * Get file size and gzipped size
@@ -54,26 +40,27 @@ function getFileSize(filePath) {
     return `📂 ${filePath} - ${size} KB (gzipped: ${gzipped} KB)`;
 }
 
-// -------------------------------------------
-// Build Function
-// -------------------------------------------
-
 /**
  * Run esbuild to generate a JavaScript bundle.
  * 
  * @param {string} outfile - The output file path.
  * @param {boolean} minify - Whether to minify the output.
  */
-function build(outfile, minify) {
-
-    // Get the current year
-    const year = new Date().getFullYear();
+function build(outfile, minify, isBrowser) {
 
     // Get the package version
     const { version } = JSON.parse(fs.readFileSync('./package.json', 'utf-8'));
 
     // Execute the build process
-    esbuild.build({ ...buildOptions, outfile, minify, banner: { js: `/* AlmostNo.js v${version} */` } })
+    esbuild.build({
+        ...buildOptions,
+        outfile,
+        minify,
+        banner: { js: `/* AlmostNo.js v${version} */` },
+        footer: isBrowser
+            ? { js: `window.$ = $;` }  // Only for browser builds
+            : { js: `export default $;` }, // Only for module builds
+    })
 
         // On success, log the file size
         .then(() => console.log(`✅`, getFileSize(outfile)))
@@ -82,12 +69,9 @@ function build(outfile, minify) {
         .catch(() => process.exit(1));
 }
 
-// -------------------------------------------
-// Execute Builds
-// -------------------------------------------
+// Browser Builds (Includes `window.$ = $;`)
+build('./dist/almostno.js', false, true);
+build('./dist/almostno.min.js', true, true);
 
-// Build unminified version
-build('./dist/almostno.js', false);
-
-// Build minified version
-build('./dist/almostno.min.js', true);
+// Module Build (No `window.$ = $;`, but exports `$`)
+build('./dist/almostno.module.js', true, false);
