@@ -1,6 +1,6 @@
 {
   "name": "almostnojs",
-  "version": "0.9.9",
+  "version": "0.9.15",
   "description": "A minimalist, dependency-free JavaScript framework for DOM manipulation, event handling, animations, state management, and HTTP requests.",
   "keywords": [
     "javascript",
@@ -19,9 +19,9 @@
     "utility",
     "simple"
   ],
-  "main": "src/index.js",
   "type": "module",
   "scripts": {
+    "tag": "git tag v$(node -p \"require('./package.json').version\") && git push origin v$(node -p \"require('./package.json').version\")",
     "build": "node build/build.js && cp dist/almostno.min.js docs/",
     "autobuild": "nodemon --watch src --ext js --exec \"npm run build\"",
     "test": "NODE_OPTIONS='--no-deprecation' jest --watch",
@@ -37,8 +37,17 @@
   "files": [
     "dist/",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "index.d.ts"
   ],
+  "types": "./index.d.ts",
+  "main": "./dist/almostno.module.js",
+  "module": "./dist/almostno.module.js",
+  "exports": {
+    "types": "./index.d.ts",
+    "import": "./dist/almostno.module.js",
+    "require": "./dist/almostno.module.js"
+  },
   "devDependencies": {
     "@babel/preset-env": "^7.26.7",
     "esbuild": "^0.24.2",

@@ -1,4 +1,4 @@
-/* AlmostNo.js v0.9.8 */
+/* AlmostNo.js v0.9.15 */
 (() => {
   // src/core.js
   var AnJS = class extends Array {
@@ -430,3 +430,4 @@
   if (typeof window !== "undefined") window.$ = $;
   var index_default = $;
 })();
+window.$ = $;
