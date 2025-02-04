@@ -16,19 +16,19 @@ AlmostNo.js is a lightweight JavaScript library (~8 KB minified, ~2.8 KB gzipped
 - **Utility Functions** – Small but useful built-in helpers.
 
 ## Examples
-See AlmostNo.js in action:
+See AlmostNo.js [Live Examples](https://coreyolson.github.io/almostno.js/) in action.
 
-- [Animations](examples/animate.html)
-- [Attributes](examples/attributes.html)
-- [Core Features](examples/core.html)
-- [DOM Manipulation](examples/dom.html)
-- [Events](examples/events.html)
-- [Filtering & Traversal](examples/filtering.html)
-- [HTTP Requests](examples/request.html)
-- [State Management](examples/state.html)
-- [Utilities](examples/utilities.html)
+- [Animations](docs/animate.html)
+- [Attributes](docs/attributes.html)
+- [Core Features](docs/core.html)
+- [DOM Manipulation](docs/dom.html)
+- [Events](docs/events.html)
+- [Filtering & Traversal](docs/filtering.html)
+- [HTTP Requests](docs/request.html)
+- [State Management](docs/state.html)
+- [Utilities](docs/utilities.html)
 
-Explore more at the [Examples Index](examples/index.html).
+Explore more at the [Examples Index](docs/index.html).
 
 ## **Browser Support**
 AlmostNo.js is built for **modern browsers** and targets **ES2020**. It works on Chrome, Firefox, Edge, Safari, and Opera. If you're still worried about Internet Explorer... 🤔 No polyfills, no regrets.

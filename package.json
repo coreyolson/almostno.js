@@ -22,7 +22,7 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "build": "node build/build.js",
+    "build": "node build/build.js && cp dist/almostno.min.js docs/",
     "autobuild": "nodemon --watch src --ext js --exec \"npm run build\"",
     "test": "NODE_OPTIONS='--no-deprecation' jest --watch",
     "posttest": "rm -rf ./coverage",
