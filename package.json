@@ -1,6 +1,6 @@
 {
   "name": "almostnojs",
-  "version": "0.9.8",
+  "version": "0.9.9",
   "description": "A minimalist, dependency-free JavaScript framework for DOM manipulation, event handling, animations, state management, and HTTP requests.",
   "keywords": [
     "javascript",

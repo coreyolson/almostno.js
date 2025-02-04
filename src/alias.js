@@ -22,3 +22,7 @@ import AnJS from './core.js';
         return callback ? this.on(event, callback) : this.trigger(event);
     };
 });
+
+// Create alias methods for display and removal
+AnJS.prototype.hide = function () { return this.display(false); };
+AnJS.prototype.show = function () { return this.display(true); };

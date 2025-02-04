@@ -8,11 +8,9 @@ declare class AnJS extends Array<HTMLElement> {
     html(value?: string): string | AnJS;
     css(name: string, value?: string): string | AnJS;
     class(name: string, add?: boolean): AnJS;
-    display(show: boolean): AnJS;
-    remove(): AnJS;
-    empty(): AnJS;
     insert(content: string | HTMLElement | HTMLElement[], position?: string): AnJS;
     prop(name: string, value?: any): any | AnJS;
+    val(value?: string): string | AnJS;
     has(className: string): boolean;
     focus(): AnJS;
     blur(): AnJS;
@@ -24,7 +22,6 @@ declare class AnJS extends Array<HTMLElement> {
     closest(selector: string): AnJS;
     id(value?: string): string | AnJS;
     attr(name: string, value?: string): string | AnJS;
-    removeAttr(name: string): AnJS;
     serialize(): string;
     on(event: string, selector: string | ((event: Event) => void), handler?: (event: Event) => void): AnJS;
     off(event: string, selector: string | ((event: Event) => void), handler?: (event: Event) => void): AnJS;

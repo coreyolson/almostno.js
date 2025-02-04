@@ -1,8 +1,8 @@
 # AlmostNo.js
 
-![Version](https://img.shields.io/badge/version-0.9.8-blue.svg)
+![Version](https://img.shields.io/badge/version-0.9.9-blue.svg)
 
-AlmostNo.js is a lightweight JavaScript library (~8 KB minified, ~2.8 KB gzipped) designed for DOM manipulation, event handling, animations, and state management. It follows a minimalist approach similar to Zepto.js, making it a fast, modern alternative with a familiar API.
+AlmostNo.js is a lightweight JavaScript library (~8 KB minified, ~2.9 KB gzipped) designed for DOM manipulation, event handling, animations, and state management. It follows a minimalist approach similar to Zepto.js, making it a fast, modern alternative with a familiar API.
 
 ## Features
 
@@ -227,6 +227,8 @@ $.get('/api/slow-response', { timeout: 3000 }) // Auto-aborts after 3 seconds
 - `.keyup(callback)` – Attach or trigger a `keyup` event.
 - `.mouseover(callback)` – Attach or trigger a `mouseover` event.
 - `.mouseout(callback)` – Attach or trigger a `mouseout` event.
+- `.hide()` – Hide elements.
+- `.show()` – Show elements.
 
 ## Comparisons
 

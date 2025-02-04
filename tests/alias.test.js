@@ -151,4 +151,18 @@ describe("AnJS Alias Methods", () => {
             expect(mockFn).toHaveBeenCalledTimes(1);
         });
     });
+
+    describe("hide() method", () => {
+        test("should hide the element", () => {
+            $("#test").hide();
+            expect($("#test").css("display")).toBe("none");
+        });
+    });
+
+    describe("show() method", () => {
+        test("should show the element", () => {
+            $("#test").hide().show();
+            expect($("#test").css("display")).not.toBe("none");
+        });
+    });
 });

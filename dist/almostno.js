@@ -304,6 +304,12 @@
       return callback ? this.on(event, callback) : this.trigger(event);
     };
   });
+  AnJS.prototype.hide = function() {
+    return this.display(false);
+  };
+  AnJS.prototype.show = function() {
+    return this.display(true);
+  };
 
   // src/request.js
   function mergeHeaders(customHeaders = {}, hasBody) {
