@@ -96,7 +96,7 @@ export function request(url, method = 'GET', data = null, options = {}) {
     const urlObj = new URL(url, window.location.origin);
 
     // Determine if request has a body
-    const hasBody = (method !== 'GET' && method !== 'DELETE' && data);
+    const hasBody = data && !['GET', 'DELETE'].includes(method);
 
     // Merge headers
     const headers = mergeHeaders(options.headers, hasBody);
@@ -105,13 +105,7 @@ export function request(url, method = 'GET', data = null, options = {}) {
     const body = hasBody ? processBody(data, headers) : undefined;
 
     // Fetch options
-    const fetchOptions = { method, headers };
-
-    // Only attach body if it's present
-    if (body !== undefined) fetchOptions.body = body;
-
-    // Attach signal if provided
-    if (signal) fetchOptions.signal = signal;
+    const fetchOptions = { method, headers, ...(body && { body }), ...(signal && { signal }) };
 
     // Execute fetch request
     const fetchPromise = fetch(urlObj.toString(), fetchOptions).then(response => {
@@ -143,11 +137,19 @@ AnJS.prototype.request = function (url, method = 'GET', data = null, options = {
  * Define HTTP method shortcuts
  */
 const http = {
+
+    // Read operations (safe, idempotent)
+    head: (url, options = {}) => request(url, "HEAD", null, options),
     get: (url, options = {}) => request(url, 'GET', null, options),
-    delete: (url, options = {}) => request(url, 'DELETE', null, options),
+    options: (url, options = {}) => request(url, "OPTIONS", null, options),
+
+    // Write operations (modifying data)
     post: (url, data, options = {}) => request(url, 'POST', data, options),
     put: (url, data, options = {}) => request(url, 'PUT', data, options),
     patch: (url, data, options = {}) => request(url, 'PATCH', data, options),
+    delete: (url, options = {}) => request(url, 'DELETE', null, options),
+
+    // Utilities
     abortController: () => new AbortController(),
 };
 

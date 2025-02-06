@@ -4,148 +4,158 @@ import AnJS from './core.js';
 // WeakMap to store event handlers per element
 const eventStore = new WeakMap();
 
-/**
- * Attach an event listener (direct or delegated)
- * 
- * @param {string} event - Event type (e.g., 'click')
- * @param {string | Function} selector - Selector for delegation or event handler
- * @param {Function} [handler] - Event handler if delegation is used
- * @returns {AnJS} - Chainable instance
- */
-AnJS.prototype.on = function (event, selector, handler) {
+// Batch assign event handling methods to AnJS prototype
+Object.assign(AnJS.prototype, {
 
-    // If no selector is provided, attach directly
-    if (typeof selector === "function") return this.delegate(event, null, selector);
+    /**
+     * Attach an event listener (direct or delegated)
+     * 
+     * @param {string} event - Event type (e.g., 'click')
+     * @param {string | Function} selector - Selector for delegation or event handler
+     * @param {Function} [handler] - Event handler if delegation is used
+     * @returns {AnJS} - Chainable instance
+     */
+    on(event, selector, handler) {
 
-    // Otherwise, attach with delegation
-    return this.delegate(event, selector, handler);
-};
+        // If no selector is provided, attach directly
+        return typeof selector === "function"
 
-/**
- * Remove an event listener (direct or delegated)
- * 
- * @param {string} event - Event type (e.g., 'click')
- * @param {string | Function} selector - Selector for delegation or event handler
- * @param {Function} [handler] - Event handler if delegation is used
- * @returns {AnJS} - Chainable instance
- */
-AnJS.prototype.off = function (event, selector, handler) {
+            // Attach directly
+            ? this.delegate(event, null, selector)
 
-    // If no selector is provided, remove directly
-    if (typeof selector === "function") return this.undelegate(event, null, selector);
+            // Attach with delegation
+            : this.delegate(event, selector, handler);
+    },
 
-    // Otherwise, remove with delegation
-    return this.undelegate(event, selector, handler);
-};
+    /**
+     * Remove an event listener (direct or delegated)
+     * 
+     * @param {string} event - Event type (e.g., 'click')
+     * @param {string | Function} selector - Selector for delegation or event handler
+     * @param {Function} [handler] - Event handler if delegation is used
+     * @returns {AnJS} - Chainable instance
+     */
+    off(event, selector, handler) {
 
-/**
- * Attach a delegated event listener using WeakMap for storage
- * 
- * @param {string} event - Event type (e.g., 'click')
- * @param {string | null} selector - Selector to match (e.g., '.btn') or `null` for direct binding
- * @param {Function} handler - Event callback function
- * @returns {AnJS} - Chainable instance
- */
-AnJS.prototype.delegate = function (event, selector, handler) {
+        // If no selector is provided, remove directly
+        return typeof selector === "function"
 
-    // Iterate over each element
-    return this.each(el => {
+            // Remove directly
+            ? this.undelegate(event, null, selector)
 
-        // Retrieve or initialize event storage for the element
-        if (!eventStore.has(el)) eventStore.set(el, {});
+            // Remove with delegation
+            : this.undelegate(event, selector, handler);
+    },
 
-        // Retrieve the event storage
-        const events = eventStore.get(el);
+    /**
+     * Attach a delegated event listener using WeakMap for storage
+     * 
+     * @param {string} event - Event type (e.g., 'click')
+     * @param {string | null} selector - Selector to match (e.g., '.btn') or `null` for direct binding
+     * @param {Function} handler - Event callback function
+     * @returns {AnJS} - Chainable instance
+     */
+    delegate(event, selector, handler) {
 
-        // Ensure event storage exists for the given type
-        if (!events[event]) events[event] = [];
+        // Iterate over each element
+        return this.each(el => {
 
-        // Create a wrapper function for delegation
-        const delegateHandler = e => {
+            // Retrieve or initialize event storage for the element
+            if (!eventStore.has(el)) eventStore.set(el, {});
 
-            // Find the closest matching element
-            const target = selector ? e.target.closest(selector) : el;
+            // Retrieve the event storage
+            const events = eventStore.get(el);
 
-            // If a match is found, call the handler
-            if (target && el.contains(target)) handler.call(target, e);
-        };
+            // Ensure event storage exists for the given type
+            if (!events[event]) events[event] = [];
 
-        // Store multiple handlers per selector-event combination
-        events[event].push({ selector, handler, delegateHandler });
+            // Create a wrapper function for delegation
+            const delegateHandler = e => {
 
-        // Attach event listener
-        el.addEventListener(event, delegateHandler);
-    });
-};
+                // Find the closest matching element
+                const target = selector ? e.target.closest(selector) : el;
 
-/**
- * Remove a delegated event listener using WeakMap
- * 
- * @param {string} event - Event type (e.g., 'click')
- * @param {string | null} selector - Selector for delegation or `null` for direct binding
- * @param {Function} [handler] - Specific handler to remove (optional)
- * @returns {AnJS} - Chainable instance
- */
-AnJS.prototype.undelegate = function (event, selector, handler) {
+                // If a match is found, call the handler
+                if (target && el.contains(target)) handler.call(target, e);
+            };
 
-    // Iterate over each element
-    return this.each(el => {
+            // Store multiple handlers per selector-event combination
+            events[event].push({ selector, handler, delegateHandler });
 
-        // If no event store exists, return early
-        if (!eventStore.has(el)) return;
+            // Attach event listener
+            el.addEventListener(event, delegateHandler);
+        });
+    },
 
-        // Retrieve the event storage
-        const events = eventStore.get(el);
+    /**
+     * Remove a delegated event listener using WeakMap
+     * 
+     * @param {string} event - Event type (e.g., 'click')
+     * @param {string | null} selector - Selector for delegation or `null` for direct binding
+     * @param {Function} [handler] - Specific handler to remove (optional)
+     * @returns {AnJS} - Chainable instance
+     */
+    undelegate(event, selector, handler) {
 
-        // If no handlers exist for this event, return early
-        if (!events[event]) return;
+        // Iterate over each element
+        return this.each(el => {
 
-        // Non-specific handler removal
-        if (!handler) {
+            // If no event store exists, return early
+            if (!eventStore.has(el)) return;
 
-            // Remove all event listeners for this event
-            events[event].forEach(item => el.removeEventListener(event, item.delegateHandler));
+            // Retrieve the event storage
+            const events = eventStore.get(el);
 
-            // Delete the event entry from events
-            delete events[event];
+            // If no handlers exist for this event, return early
+            if (!events[event]) return;
 
-        // Specific handler removal
-        } else {
+            // Non-specific handler removal
+            if (!handler) {
 
-            // Remove only matching handlers
-            events[event] = events[event].filter(item => {
+                // Remove all event listeners for this event
+                events[event].forEach(item => el.removeEventListener(event, item.delegateHandler));
 
-                // If the selector and handler match, remove the event listener
-                if (item.selector === selector && item.handler === handler) {
+                // Delete the event entry from events
+                delete events[event];
 
-                    // Remove the event listener
-                    el.removeEventListener(event, item.delegateHandler);
+                // Specific handler removal
+            } else {
 
-                    // Filter the removed handler
-                    return false;
-                }
+                // Remove only matching handlers
+                events[event] = events[event].filter(item => {
 
-                // Keep the handler
-                return true;
-            });
+                    // If the selector and handler match, remove the event listener
+                    if (item.selector === selector && item.handler === handler) {
 
-            // If no handlers remain for this event, remove it
-            if (events[event].length === 0) delete events[event];
-        }
+                        // Remove the event listener
+                        el.removeEventListener(event, item.delegateHandler);
 
-        // If no events remain, remove the element from the store
-        if (Object.keys(events).length === 0) eventStore.delete(el);
-    });
-};
+                        // Filter the removed handler
+                        return false;
+                    }
 
-/**
- * Trigger a custom event on elements
- * 
- * @param {string} event - Event type to trigger (e.g., 'click')
- * @returns {AnJS} - Chainable instance
- */
-AnJS.prototype.trigger = function (event) {
+                    // Keep the handler
+                    return true;
+                });
 
-    // Trigger the event on each element
-    return this.each(el => el.dispatchEvent(new Event(event, { bubbles: true })));
-};
+                // If no handlers remain for this event, remove it
+                if (events[event].length === 0) delete events[event];
+            }
+
+            // If no events remain, remove the element from the store
+            if (Object.keys(events).length === 0) eventStore.delete(el);
+        });
+    },
+
+    /**
+     * Trigger a custom event on elements
+     * 
+     * @param {string} event - Event type to trigger (e.g., 'click')
+     * @returns {AnJS} - Chainable instance
+     */
+    trigger(event) {
+
+        // Trigger the event on each element
+        return this.each(el => el.dispatchEvent(new Event(event, { bubbles: true })));
+    }
+});

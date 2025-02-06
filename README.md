@@ -5,7 +5,7 @@
 ![Minified + Gzip](https://img.shields.io/bundlephobia/minzip/almostnojs)
 ![Flexible & Easy to Learn](https://img.shields.io/badge/flexible-Easy%20to%20Learn-gold)
 
-AlmostNo.js is a lightweight JavaScript library (~8 KB minified, ~2.9 KB gzipped) designed for DOM manipulation, event handling, animations, and state management. It follows a minimalist approach similar to Zepto.js, making it a fast, modern alternative with a familiar API.
+AlmostNo.js is a lightweight JavaScript library (~11 KB minified, ~4 KB gzipped) designed for DOM manipulation, event handling, animations, and state management. It follows a minimalist approach similar to Zepto.js, making it a fast, modern alternative with a familiar API.
 
 ## Features
 

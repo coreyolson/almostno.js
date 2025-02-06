@@ -1,69 +1,76 @@
 // Dependencies
 import AnJS from "./core.js";
 
-/**
- * Select the next sibling element
- * 
- * @returns {AnJS} - New AnJS instance with the next sibling.
- */
-AnJS.prototype.next = function () {
+// Batch assign traversal methods to AnJS prototype
+Object.assign(AnJS.prototype, {
 
-    // Return new AnJS instance with the next sibling
-    return new AnJS(this[0]?.nextElementSibling ? [this[0].nextElementSibling] : []);
-};
+    /**
+     * Select the next sibling element
+     * 
+     * @returns {AnJS} - New AnJS instance with the next sibling.
+     */
+    next() {
 
-/**
- * Select the previous sibling element
- * 
- * @returns {AnJS} - New AnJS instance with the previous sibling.
- */
-AnJS.prototype.prev = function () {
+        // Check if the first element exists and has a next sibling
+        return new AnJS(this[0]?.nextElementSibling ? [this[0].nextElementSibling] : []);
+    },
 
-    // Return new AnJS instance with the previous sibling
-    return new AnJS(this[0]?.previousElementSibling ? [this[0].previousElementSibling] : []);
-};
+    /**
+     * Select the previous sibling element
+     * 
+     * @returns {AnJS} - New AnJS instance with the previous sibling.
+     */
+    prev() {
 
-/**
- * Select the parent element
- * 
- * @returns {AnJS} - New AnJS instance with the parent.
- */
-AnJS.prototype.parent = function () {
+        // Check if the first element exists and has a previous sibling
+        return new AnJS(this[0]?.previousElementSibling ? [this[0].previousElementSibling] : []);
+    },
 
-    // Return new AnJS instance with the parent
-    return new AnJS(this[0]?.parentElement ? [this[0].parentElement] : []);
-};
+    /**
+     * Select the parent element
+     * 
+     * @returns {AnJS} - New AnJS instance with the parent.
+     */
+    parent() {
 
-/**
- * Select child elements
- * 
- * @returns {AnJS} - New AnJS instance with children.
- */
-AnJS.prototype.children = function () {
+        // Check if the first element exists and has a parent
+        return new AnJS(this[0]?.parentElement ? [this[0].parentElement] : []);
+    },
 
-    // Return new AnJS instance with children
-    return new AnJS(this[0] ? [...this[0].children] : []);
-};
+    /**
+     * Select child elements
+     * 
+     * @returns {AnJS} - New AnJS instance with children.
+     */
+    children() {
 
-/**
- * Select all sibling elements
- * 
- * @returns {AnJS} - New AnJS instance with all siblings except the current element.
- */
-AnJS.prototype.siblings = function () {
+        // Check if the first element exists and has children
+        return new AnJS(this[0] ? [...this[0].children] : []);
+    },
 
-    // Return new AnJS instance with all siblings except the current element
-    return new AnJS(this[0]?.parentElement ? [...this[0].parentElement.children].filter(el => el !== this[0]) : []);
-};
+    /**
+     * Select all sibling elements
+     * 
+     * @returns {AnJS} - New AnJS instance with all siblings except the current element.
+     */
+    siblings() {
 
-/**
- * Select the closest ancestor matching a selector
- * 
- * @param {string} selector - CSS selector to match.
- * @returns {AnJS} - New AnJS instance with the closest matching ancestor.
- */
-AnJS.prototype.closest = function (selector) {
+        // Get parent element
+        const parent = this[0]?.parentElement;
 
-    // Return new AnJS instance with the closest matching ancestor
-    return new AnJS(this[0]?.closest(selector) ? [this[0].closest(selector)] : []);
-};
+        // Return siblings if parent exists, otherwise return empty
+        return new AnJS(parent ? [...parent.children].filter(el => el !== this[0]) : []);
+    },
+
+    /**
+     * Select the closest ancestor matching a selector
+     * 
+     * @param {string} selector - CSS selector to match.
+     * @returns {AnJS} - New AnJS instance with the closest matching ancestor.
+     */
+    closest(selector) {
+
+        // Check if the first element exists and find the closest matching ancestor
+        return new AnJS(this[0]?.closest(selector) ? [this[0].closest(selector)] : []);
+    }
+});

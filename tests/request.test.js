@@ -264,6 +264,23 @@ describe('AnJS HTTP Requests', () => {
     });
 
     describe('Shortcut Methods', () => {
+
+        test('$.head() should make a HEAD request', async () => {
+            await $.head('/head-test');
+            expect(fetch).toHaveBeenCalledWith(`${baseUrl}/head-test`, {
+                method: 'HEAD',
+                headers: { 'Accept': 'application/json' },
+            });
+        });
+
+        test('$.options() should make an OPTIONS request', async () => {
+            await $.options('/options-test');
+            expect(fetch).toHaveBeenCalledWith(`${baseUrl}/options-test`, {
+                method: 'OPTIONS',
+                headers: { 'Accept': 'application/json' },
+            });
+        });
+
         test('$.get() should make a GET request', async () => {
             const result = await $.get('/get-test');
 

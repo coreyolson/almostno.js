@@ -1,56 +1,60 @@
 // Dependencies
 import AnJS from './core.js';
 
-/**
- * Get or set the id attribute
- * 
- * @param {string} [value] - The id to set.
- * @returns {string | AnJS} - The id if getting, otherwise chainable.
- */
-AnJS.prototype.id = function (value) {
+// Batch assign attribute methods to AnJS prototype
+Object.assign(AnJS.prototype, {
 
-    // Get or set the id attribute
-    if (value === undefined) return this[0]?.id;
+    /**
+     * Get or set an attribute on selected elements
+     * 
+     * @param {string} name - Attribute name.
+     * @param {string} [value] - Attribute value (if setting).
+     * @returns {string | AnJS} - Attribute value if getting, AnJS instance if setting.
+     */
+    attr(name, value) {
 
-    // Set the id attribute
-    return this.each(el => (el.id = value));
-};
+        // Get attribute
+        if (value === undefined) return this[0]?.getAttribute(name);
 
-/**
- * Get or set an attribute on selected elements
- * 
- * @param {string} name - Attribute name.
- * @param {string} [value] - Attribute value (if setting).
- * @returns {string | AnJS} - Attribute value if getting, AnJS instance if setting.
- */
-AnJS.prototype.attr = function (name, value) {
+        // Remove attribute if value is null
+        if (value === null) return this.each(el => el.removeAttribute(name));
 
-    // Get attribute
-    if (value === undefined) return this[0]?.getAttribute(name);
+        // Set attribute
+        return this.each(el => el.setAttribute(name, value));
+    },
 
-    // Set attribute
-    return this.each(el => el.setAttribute(name, value));
-};
+    /**
+     * Get or set the id attribute
+     * 
+     * @param {string} [value] - The id to set.
+     * @returns {string | AnJS} - The id if getting, otherwise chainable.
+     */
+    id(value) {
 
-/**
- * Remove an attribute from selected elements
- * 
- * @param {string} name - Attribute name to remove.
- * @returns {AnJS} - Returns self for chaining.
- */
-AnJS.prototype.removeAttr = function (name) {
+        // Get or set id attribute
+        return value === undefined ? this.attr("id") : this.attr("id", value);
+    },
 
-    // Remove attribute from all elements
-    return this.each(el => el.removeAttribute(name));
-};
+    /**
+     * Remove an attribute from selected elements
+     * 
+     * @param {string} name - Attribute name to remove.
+     * @returns {AnJS} - Returns self for chaining.
+     */
+    removeAttr(name) {
 
-/**
- * Serialize form data from the first selected element
- * 
- * @returns {string} - URL-encoded form data string or an empty string if not a form.
- */
-AnJS.prototype.serialize = function () {
+        // Remove attribute
+        return this.attr(name, null);
+    },
 
-    // Ensure the selected element is a form before serializing
-    return this[0] instanceof HTMLFormElement ? new URLSearchParams(new FormData(this[0])).toString() : '';
-};
+    /**
+     * Serialize form data from the first selected element
+     * 
+     * @returns {string} - URL-encoded form data string or an empty string if not a form.
+     */
+    serialize() {
+
+        // Ensure the selected element is a form before serializing
+        return this[0] instanceof HTMLFormElement ? new URLSearchParams(new FormData(this[0])).toString() : '';
+    }
+});

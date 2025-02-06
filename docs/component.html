@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnJS Components</title>
+    <script src="../dist/almostno.js"></script>
+    <style>
+        .card {
+            padding: 10px;
+            border: 1px solid #ddd;
+            margin: 5px;
+        }
+
+        .counter {
+            font-size: 18px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            display: inline-block;
+            margin: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Component Test</h1>
+
+    <div id="app">
+        <!-- Auto-mounted Component -->
+        <Card title="First Card" content="Auto-mounted!"></Card>
+    </div>
+
+    <!-- Button to add more cards -->
+    <button id="addCard">Add Card</button>
+
+    <hr>
+
+    <h2>Alternative Counter Component</h2>
+
+    <div id="counter-section">
+        <!-- Auto-mounted Counter -->
+        <Counter></Counter>
+    </div>
+
+    <!-- Button to increment all counters globally -->
+    <button id="globalIncrement">Global</button>
+    <button id="shareIncrement">Share</button>
+    <button id="sharePlusGlobalIncrement">Share + Global</button>
+    <script>
+        // Shared state for cards
+        $.global("cards", { shareCount: 0, share() { this.shareCount++ } });
+
+        // Global counter state (Alternative event handling)
+        $.global("shared", { count: 0, increment() { this.count++ } });
+
+        // First Card Component (Uses `cards` global state)
+        $.component("Card",
+            ({ state, props }) => `
+                <div class="card">
+                    <h3>${props.title}</h3>
+                    <p>${props.content}</p>
+                    <p>Likes: <span data-bind-this="likeCount"></span></p>
+                    <p>SharedCount: <span data-bind="cards.shareCount"></span></p>
+                    <button data-action="like">Like</button>
+                    <button data-action="cards.share">Share</button>
+                </div>`,
+            () => $.state({ likeCount: 0, like() { this.likeCount++ } })
+        );
+
+        // Alternative Card Component (Uses `shared` global state directly)
+        $.component("AltCard",
+            ({ state, props }) => `
+                <div class="card">
+                    <h3>${props.title}</h3>
+                    <p>${props.content}</p>
+                    <p>Likes: <span data-bind-this="likes"></span></p>
+                    <p>Shared: <span data-bind="shared.count"></span></p>
+                    <button data-action="like">Like</button>
+                    <button data-action="share">Share</button>
+                </div>`,
+            () => $.state({ likes: 0 }),
+            ($, state) => {
+                $.on("click", "button[data-action='like']", () => state.likes++);
+                $.on("click", "button[data-action='share']", () => $.global("shared").increment());
+            }
+        );
+
+        // Counter Component (No `uniqueId`, purely global event handling)
+        $.component("Counter",
+            ({ state }) => `
+                <div class="counter">
+                    <p>Global Count: <span data-bind="shared.count"></span></p>
+                </div>`,
+            () => $.state({})
+        );
+
+        // Add new Card dynamically
+        $('#addCard').on('click', () => {
+            $('#app').insert("<Card title='New Card' content='Dynamically added!'>", "append");
+        });
+
+        // Increment all counters globally
+        $('#globalIncrement').on('click', () => $.global("shared").increment());
+
+        // Increment all share counters
+        $('#shareIncrement').on('click', () => $.global("cards").share());
+
+        // Increate "both" counter
+        $('#sharePlusGlobalIncrement').on('click', () => {
+            $.global("shared").increment();
+            $.global("cards").share();
+        });
+    </script>
+
+</body>
+
+</html>

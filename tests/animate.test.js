@@ -91,4 +91,11 @@ describe("AnJS Animate Methods", () => {
         jest.runAllTimers();
         expect(box.style.opacity).toBe("1");
     });
+
+    test('animate() with a zero duration should apply styles immediately', () => {
+        const box = document.getElementById("box");
+        const instance = $(box);
+        instance.animate({ opacity: 0.5 }, 0);
+        expect(box.style.opacity).toBe("0.5");
+    });
 });

@@ -2,13 +2,13 @@
 import AnJS from './core.js';
 
 // Modules
-import './dom.js';
-import './traversal.js';
+import './animate.js';
 import './attributes.js';
+import './dom.js';
 import './events.js';
 import './filtering.js';
-import './animate.js';
 import './state.js';
+import './traversal.js';
 
 // Alias methods
 import './alias.js';
@@ -16,9 +16,8 @@ import './alias.js';
 // Utilities
 import http from './request.js';
 import utils from './utilities.js';
-
-// Extension Support
 import extend from './extend.js';
+import components from './component.js';
 
 /**
  * Factory function for creating AnJS instances
@@ -32,8 +31,15 @@ function $(selector) {
     return new AnJS(selector);
 }
 
+// AnJS methods that should be accessible via `$`
+["on", "off", "trigger", "state", "global", "component"].forEach(method => {
+
+    // Dynamically assign methods to `$`
+    $[method] = (...args) => AnJS.prototype[method].apply($(), args);
+});
+
 // Attach utilities to `$`
-Object.assign($, http, utils, extend);
+Object.assign($, http, utils, extend, components);
 
 // Attach to `window` if in browser
 if (typeof window !== "undefined") window.$ = $;

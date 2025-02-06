@@ -47,11 +47,8 @@ export default class AnJS extends Array {
      */
     get(index) {
 
-        // Return all elements
-        if (index === undefined) return [...this];
-
-        // Return specific element
-        return this.at(index);
+        // Return all elements if no index is provided
+        return index === undefined ? this : this.at(index);
     }
 
     /**
