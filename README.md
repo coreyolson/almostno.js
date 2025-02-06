@@ -23,6 +23,7 @@ See AlmostNo.js [Live Examples](https://coreyolson.github.io/almostno.js/) in ac
 
 - [Animations](docs/animate.html)
 - [Attributes](docs/attributes.html)
+- [Components](docs/components.html)
 - [Core Features](docs/core.html)
 - [DOM Manipulation](docs/dom.html)
 - [Events](docs/events.html)
@@ -82,6 +83,50 @@ $('#count-display').bind(state);
   <span id="count-display" data-bind="count"></span>
   <button id="increment">Increase</button>
 </div>
+```
+
+### Components
+
+Create reusable components with ease. Here's a quick tutorial on how to define and use components.
+
+#### **Defining a Component**
+
+To define a component, use the `$.component` method. You need to provide a name, a template function, an optional state function, and optional event handlers.
+
+```js
+// Define a Card component
+$.component("Card",
+    ({ state, props }) => `
+        <div class="card">
+            <h3>${props.title}</h3>
+            <p>${props.content}</p>
+            <p>Likes: <span data-bind-this="likeCount"></span></p>
+            <p>SharedCount: <span data-bind="cards.shareCount"></span></p>
+            <button data-action="like">Like</button>
+            <button data-action="cards.share">Share</button>
+        </div>`,
+    () => $.state({ likeCount: 0, like() { this.likeCount++ } })
+);
+```
+
+#### **Using a Component**
+
+Once defined, you can use the component in your HTML by simply including its tag.
+
+```html
+<!-- HTML -->
+<div id="app">
+  <Card title="First Card" content="Auto-mounted!"></Card>
+</div>
+```
+
+#### **Handling Global State**
+
+You can define global state that can be shared across multiple components.
+
+```js
+// Define global state
+$.global("shared", { count: 0, increment() { this.count++ } });
 ```
 
 ### Perform HTTP Requests
@@ -196,6 +241,8 @@ $.get('/api/slow-response', { timeout: 3000 }) // Auto-aborts after 3 seconds
 - `.state(initialState)` – Create a state object.
 - `.bind(state, context)` – Bind state values to the DOM.
 - `.unbind(state)` – Remove bindings.
+- `.global(name, initial)` – Retrieve or create a global state.
+- `.hasGlobal(name)` – Check if a global state exists.
 
 ### HTTP Requests
 - `$.get(url, options)` – Perform a GET request.
@@ -237,7 +284,6 @@ $.get('/api/slow-response', { timeout: 3000 }) // Auto-aborts after 3 seconds
 
 | Feature | AlmostNo.js | Zepto | jQuery |
 |---------|------------|--------|--------|
-| File Size (gzipped) | 2.8 KB | 9 KB | 32 KB |
 | DOM Manipulation | ✅ | ✅ | ✅ |
 | Event Handling | ✅ | ✅ | ✅ |
 | AJAX/Fetch Wrappers | ✅ | ✅ | ✅ |
