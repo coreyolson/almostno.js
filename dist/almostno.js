@@ -1,4 +1,4 @@
-/* AlmostNo.js v1.0.0 */
+/* AlmostNo.js v1.1.0 */
 (() => {
   // src/core.js
   var AnJS = class extends Array {

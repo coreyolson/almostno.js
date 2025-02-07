@@ -5,7 +5,9 @@
 ![Minified + Gzip](https://img.shields.io/bundlephobia/minzip/almostnojs)
 ![Flexible & Easy to Learn](https://img.shields.io/badge/flexible-Easy%20to%20Learn-gold)
 
-AlmostNo.js is a lightweight JavaScript library (~4 KB gzipped) designed for DOM manipulation, event handling, animations, and state management. It follows a minimalist approach, making it a fast, modern alternative with a familiar API.
+AlmostNo.js is a lightweight and highly flexible JavaScript library perfect for prototyping small projects designed for DOM manipulation, event handling, animations, and state management. It follows a minimalist approach, making it a fast, modern alternative with a familiar API.
+
+AlmostNo.js is a **lightweight**, **flexible** JavaScript library built for modern DOM manipulation, event handling, animations, **persistent state**, reusable **components**, and **server-side rendering (SSR)**. It follows a minimalist approach, making it a fast, modern alternative with a familiar API.
 
 ## Features
 
@@ -15,7 +17,9 @@ AlmostNo.js is a lightweight JavaScript library (~4 KB gzipped) designed for DOM
 - **Events** – Attach, delegate, and trigger events easily.
 - **Animations** – Simple CSS-based animations.
 - **State Management** – Lightweight state bindings.
-- **Components** – Create reusable components with ease.
+- **SSR Components** – Define and register server-side components.
+- **Client-side Components** – Create reusable components with ease.
+- **Event Bus** – Cross-component communication with an event-based system.
 - **Easier Fetch API** – Wrappers for HTTP requests & timeout handling.
 - **Utility Functions** – Small but useful built-in helpers.
 
@@ -27,6 +31,7 @@ See AlmostNo.js [Live Examples](https://coreyolson.github.io/almostno.js/) in ac
 - [Components](docs/components.html)
 - [Core Features](docs/core.html)
 - [DOM Manipulation](docs/dom.html)
+- [Elements](docs/elements.html) - Requires Server-Side Rendering
 - [Events](docs/events.html)
 - [Filtering & Traversal](docs/filtering.html)
 - [HTTP Requests](docs/request.html)
@@ -212,6 +217,11 @@ $.get('/api/slow-response', { timeout: 3000 }) // Auto-aborts after 3 seconds
 - `.undelegate(event, selector, handler)` – Remove delegated event listeners.
 - `.trigger(event)` – Trigger an event.
 
+### Event Bus
+- `bus.emit(event, data)` – Emit a global event.
+- `bus.listen(event, handler)` – Listen for a global event.
+- `bus.forget(event, handler)` – Remove a global event listener.
+
 ### Traversal
 - `.next()` – Get the next sibling.
 - `.prev()` – Get the previous sibling.
@@ -244,6 +254,7 @@ $.get('/api/slow-response', { timeout: 3000 }) // Auto-aborts after 3 seconds
 - `.unbind(state)` – Remove bindings.
 - `.global(name, initial)` – Retrieve or create a global state.
 - `.hasGlobal(name)` – Check if a global state exists.
+- `.clearGlobal(name)` – Remove a global state from memory and storage.
 
 ### HTTP Requests
 - `$.get(url, options)` – Perform a GET request.

@@ -30,7 +30,7 @@ import './alias.js';
  * @param {string | HTMLElement} selector - CSS selector or element.
  * @returns {AnJS} - AnJS instance.
  */
-function $(selector) {
+function $(selector) { 
 
     // New instance of AnJS
     return new AnJS(selector);
@@ -61,8 +61,6 @@ export { $ };
 /**
  * Feature Improvements:
  * 
- * // TODO: Explore state persistence for components.
- * // TODO: Explore lightweight event-bus for communication between components.
  * // TODO: Consider lifecycle hooks (onMount(), onDestroy()) for advanced use cases.
  * // TODO: Consider adding built-in routing for single-page applications.
  */
