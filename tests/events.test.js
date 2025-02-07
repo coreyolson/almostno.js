@@ -244,3 +244,103 @@ describe("AnJS Event Methods", () => {
         });
     });
 });
+
+describe("AnJS Event Bus", () => {
+    let mockHandler1, mockHandler2;
+
+    beforeEach(() => {
+        // Reset mock handlers before each test
+        mockHandler1 = jest.fn();
+        mockHandler2 = jest.fn();
+    });
+
+    /** 
+     * Emit: Fire a global event
+     */
+    describe("emit()", () => {
+        test("should trigger all listeners for an event", () => {
+            $.listen("testEvent", mockHandler1);
+            $.listen("testEvent", mockHandler2);
+
+            $.emit("testEvent", { data: 123 });
+
+            expect(mockHandler1).toHaveBeenCalledWith({ data: 123 });
+            expect(mockHandler2).toHaveBeenCalledWith({ data: 123 });
+        });
+
+        test("should not fail if no listeners exist", () => {
+            expect(() => $.emit("nonExistingEvent")).not.toThrow();
+        });
+    });
+
+    /** 
+     * Listen: Attach a global event listener
+     */
+    describe("listen()", () => {
+        test("should register a global event listener", () => {
+            $.listen("myEvent", mockHandler1);
+            $.emit("myEvent", "hello");
+
+            expect(mockHandler1).toHaveBeenCalledWith("hello");
+        });
+
+        test("should support multiple handlers for the same event", () => {
+            $.listen("myEvent", mockHandler1);
+            $.listen("myEvent", mockHandler2);
+
+            $.emit("myEvent", "world");
+
+            expect(mockHandler1).toHaveBeenCalledWith("world");
+            expect(mockHandler2).toHaveBeenCalledWith("world");
+        });
+
+        test("should not trigger handlers of other events", () => {
+            $.listen("eventA", mockHandler1);
+            $.listen("eventB", mockHandler2);
+
+            $.emit("eventA", "test");
+
+            expect(mockHandler1).toHaveBeenCalledWith("test");
+            expect(mockHandler2).not.toHaveBeenCalled();
+        });
+    });
+
+    /** 
+     * Forget: Remove a global event listener
+     */
+    describe("forget()", () => {
+        test("should remove a specific listener", () => {
+            $.listen("testEvent", mockHandler1);
+            $.listen("testEvent", mockHandler2);
+
+            $.forget("testEvent", mockHandler1);
+            $.emit("testEvent", "data");
+
+            expect(mockHandler1).not.toHaveBeenCalled();
+            expect(mockHandler2).toHaveBeenCalledWith("data");
+        });
+
+        test("should remove all listeners if they are cleared one by one", () => {
+            $.listen("testEvent", mockHandler1);
+            $.listen("testEvent", mockHandler2);
+
+            $.forget("testEvent", mockHandler1);
+            $.forget("testEvent", mockHandler2);
+            $.emit("testEvent", "data");
+
+            expect(mockHandler1).not.toHaveBeenCalled();
+            expect(mockHandler2).not.toHaveBeenCalled();
+        });
+
+        test("should not fail when removing a non-existent listener", () => {
+            expect(() => $.forget("nonExistingEvent", mockHandler1)).not.toThrow();
+        });
+
+        test("should remove all listeners when the last one is forgotten", () => {
+            $.listen("clearEvent", mockHandler1);
+            $.forget("clearEvent", mockHandler1);
+
+            expect(() => $.emit("clearEvent")).not.toThrow();
+        });
+    });
+});

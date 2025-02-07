@@ -981,3 +981,218 @@ describe("AnJS State & Binding - Additional Tests for Full Coverage", () => {
         });
     });
 });
+
+describe("AnJS Global State Persistence", () => {
+    let instance;
+
+    beforeEach(() => {
+        instance = $(document);
+
+        global.localStorage = (function () {
+            let store = {};
+            return {
+                getItem: (key) => store[key] || null,
+                setItem: (key, value) => (store[key] = value),
+                removeItem: (key) => delete store[key],
+                clear: () => (store = {})
+            };
+        })();
+
+        global.sessionStorage = (function () {
+            let store = {};
+            return {
+                getItem: (key) => store[key] || null,
+                setItem: (key, value) => (store[key] = value),
+                removeItem: (key) => delete store[key],
+                clear: () => (store = {})
+            };
+        })();
+
+        localStorage.clear();
+        sessionStorage.clear();
+    });
+
+    describe("global()", () => {
+        test("should create and return a global state", () => {
+            const theme = instance.global("theme", { dark: false });
+            expect(theme).toBeInstanceOf(Object);
+            expect(theme.dark).toBe(false);
+        });
+
+        test("should return the same instance when called multiple times", () => {
+            const theme1 = instance.global("theme", { dark: false });
+            const theme2 = instance.global("theme");
+
+            expect(theme1).toBe(theme2);
+            expect(theme2.dark).toBe(false);
+        });
+
+        test("should persist state in localStorage", () => {
+            const settings = instance.global("settings", { volume: 50 }, { persist: "local" });
+            expect(settings.volume).toBe(50);
+
+            // Modify state
+            settings.volume = 75;
+
+            // Simulate reload
+            const newInstance = $(document);
+            const restoredSettings = newInstance.global("settings", {}, { persist: "local" });
+
+            expect(restoredSettings.volume).toBe(75);
+        });
+
+        test("should persist state in sessionStorage", () => {
+            const sessionData = instance.global("sessionData", { token: "abc123" }, { persist: "session" });
+            expect(sessionData.token).toBe("abc123");
+
+            // Modify state
+            sessionData.token = "xyz789";
+
+            // Simulate reload
+            const newInstance = $(document);
+            const restoredSession = newInstance.global("sessionData", {}, { persist: "session" });
+
+            expect(restoredSession.token).toBe("xyz789");
+        });
+
+        test("should throw an error when calling global() without initial state", () => {
+            expect(() => instance.global("missingState")).toThrowError(
+                'Global state "missingState" does not exist. Provide an initial state.'
+            );
+        });
+
+        test("should throw an error when global() is called with invalid name", () => {
+            [null, undefined, 42, {}, []].forEach(invalidName => {
+                expect(() => instance.global(invalidName)).toThrowError("Global state must have a unique name.");
+            });
+        });
+
+        test("should not persist state if no persist option is set", () => {
+            const transientState = instance.global("transient", { value: 123 });
+            transientState.value = 999;
+            instance.clearGlobal("transient");
+            const newInstance = $(document);
+            const restoredState = newInstance.global("transient", {});
+            expect(restoredState.value).toBeUndefined();
+        });
+
+        test("should correctly bind and unbind global states", () => {
+            const globalState = instance.global("appState", { active: true });
+
+            expect(instance.hasGlobal("appState")).toBe(true);
+            instance.clearGlobal("appState");
+            expect(instance.hasGlobal("appState")).toBe(false);
+        });
+    });
+
+    describe("clearGlobal()", () => {
+        test("should remove a global state", () => {
+            instance.global("testState", { key: "value" });
+            expect(instance.hasGlobal("testState")).toBe(true);
+
+            instance.clearGlobal("testState");
+            expect(instance.hasGlobal("testState")).toBe(false);
+        });
+
+        test("should do nothing if state does not exist", () => {
+            expect(() => instance.clearGlobal("nonExistentState")).not.toThrow();
+        });
+    });
+
+    describe("hasGlobal()", () => {
+        test("should return true for existing global state", () => {
+            instance.global("existingState", { enabled: true });
+            expect(instance.hasGlobal("existingState")).toBe(true);
+        });
+
+        test("should return false for non-existing global state", () => {
+            expect(instance.hasGlobal("missingState")).toBe(false);
+        });
+
+        test("should return false after clearGlobal() is called", () => {
+            instance.global("tempState", { temporary: true });
+            instance.clearGlobal("tempState");
+
+            expect(instance.hasGlobal("tempState")).toBe(false);
+        });
+
+        test("should not create state when checking hasGlobal()", () => {
+            expect(instance.hasGlobal("newState")).toBe(false);
+            expect(instance.hasGlobal("newState")).toBe(false); // Ensure no side effects
+        });
+
+        test("should return true even if global state is modified", () => {
+            instance.global("config", { version: 1 });
+            expect(instance.hasGlobal("config")).toBe(true);
+
+            instance.global("config").version = 2;
+            expect(instance.hasGlobal("config")).toBe(true);
+        });
+
+        test("should not throw when checking invalid names", () => {
+            expect(() => instance.hasGlobal()).not.toThrow();
+            expect(() => instance.hasGlobal(null)).not.toThrow();
+            expect(() => instance.hasGlobal(123)).not.toThrow();
+
+            expect(instance.hasGlobal(null)).toBe(false);
+            expect(instance.hasGlobal(123)).toBe(false);
+        });
+    });
+
+    describe("Persistent Global States", () => {
+        test("should persist state updates in localStorage", () => {
+            const persistedState = instance.global("persistedState", { count: 1 }, { persist: "local" });
+
+            persistedState.count = 42;
+            expect(JSON.parse(localStorage.getItem("persistedState")).count).toBe(42);
+        });
+
+        test("should persist state updates in sessionStorage", () => {
+            const sessionState = instance.global("sessionState", { auth: "token123" }, { persist: "session" });
+
+            sessionState.auth = "newToken";
+            expect(JSON.parse(sessionStorage.getItem("sessionState")).auth).toBe("newToken");
+        });
+
+        test("should remove from storage after clearGlobal()", () => {
+            instance.global("removableState", { active: true }, { persist: "local" });
+
+            instance.clearGlobal("removableState");
+            expect(localStorage.getItem("removableState")).toBeNull();
+        });
+
+        test("should update localStorage when persistent state changes", () => {
+            const savedState = instance.global("savedState", { user: "Alice" }, { persist: "local" });
+
+            savedState.user = "Bob";
+            expect(JSON.parse(localStorage.getItem("savedState")).user).toBe("Bob");
+
+            savedState.user = "Charlie";
+            expect(JSON.parse(localStorage.getItem("savedState")).user).toBe("Charlie");
+        });
+
+        test("should persist nested objects with full reassignment", () => {
+            const nestedState = instance.global("nestedState", { profile: { name: "Alice", age: 25 } }, { persist: "local" });
+            nestedState.profile = { ...nestedState.profile, age: 30 };
+            expect(JSON.parse(localStorage.getItem("nestedState"))).toEqual({ profile: { name: "Alice", age: 30 } });
+        });
+    });
+
+    describe("clearGlobal()", () => {
+        test("should remove persisted localStorage state", () => {
+            instance.global("userPrefs", { darkMode: true }, { persist: "local" });
+            expect(instance.global("userPrefs").darkMode).toBe(true);
+            instance.clearGlobal("userPrefs");
+            const restoredState = instance.global("userPrefs", {}, { persist: "local" });
+            expect(restoredState.darkMode).toBeUndefined();
+        });
+
+        test("should remove persisted sessionStorage state", () => {
+            instance.global("sessionInfo", { token: "abc123" }, { persist: "session" });
+            expect(instance.global("sessionInfo").token).toBe("abc123");
+            instance.clearGlobal("sessionInfo");
+            const restoredState = instance.global("sessionInfo", {}, { persist: "session" });
+            expect(restoredState.token).toBeUndefined();
+        });
+    });
+});

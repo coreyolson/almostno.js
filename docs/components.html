@@ -44,10 +44,18 @@
         <Counter></Counter>
     </div>
 
+    <h2>Persistent Counter</h2>
+
+    <div id="persistent-counter-section">
+        <!-- Auto-mounted Persistent Counter -->
+        <PersistentCounter></PersistentCounter>
+    </div>
+
     <!-- Button to increment all counters globally -->
     <button id="globalIncrement">Global</button>
     <button id="shareIncrement">Share</button>
     <button id="sharePlusGlobalIncrement">Share + Global</button>
+    <button id="persistentIncrement">Persistent</button>
     <script>
         // Shared state for cards
         $.global("cards", { shareCount: 0, share() { this.shareCount++ } });
@@ -55,6 +63,9 @@
         // Global counter state (Alternative event handling)
         $.global("shared", { count: 0, increment() { this.count++ } });
 
+        // Persistent counter state (saved in localStorage)
+        $.global("persistentCounter", { count: 0, increment() { this.count++ } }, { persist: "local" });
+        
         // First Card Component (Uses `cards` global state)
         $.component("Card",
             ({ state, props }) => `
@@ -96,6 +107,19 @@
             () => $.state({})
         );
 
+        // Persistent Counter Component
+        $.component("PersistentCounter",
+            ({ state }) => `
+                    <div class="counter">
+                        <p>Persistent Count: <span data-bind="persistentCounter.count"></span></p>
+                        <button data-action="increment">Increment</button>
+                    </div>`,
+            () => $.state({}),
+            ($, state) => {
+                $.on("click", "button[data-action='increment']", () => $.global("persistentCounter").count++);
+            }
+        );
+
         // Add new Card dynamically
         $('#addCard').on('click', () => {
             $('#app').insert("<Card title='New Card' content='Dynamically added!'>", "append");
@@ -106,6 +130,9 @@
 
         // Increment all share counters
         $('#shareIncrement').on('click', () => $.global("cards").share());
+
+        // Increment persistent counter
+        $('#persistentIncrement').on('click', () => $.global("persistentCounter").count++);
 
         // Increate "both" counter
         $('#sharePlusGlobalIncrement').on('click', () => {

@@ -157,5 +157,57 @@ Object.assign(AnJS.prototype, {
 
         // Trigger the event on each element
         return this.each(el => el.dispatchEvent(new Event(event, { bubbles: true })));
-    }
+    },
 });
+
+// Object to store global event bus handlers
+const eventBus = {};
+
+// Event Bus API
+export const bus = {
+    /**
+     * Emit a global event
+     * 
+     * @param {string} event - The event name
+     * @param {any} [data] - Optional data to send
+     */
+    emit(event, data) {
+
+        // If the event exists, call each handler
+        eventBus[event]?.forEach(handler => handler(data));
+    },
+
+    /**
+     * Listen for a global event
+     * 
+     * @param {string} event - The event name
+     * @param {Function} handler - The callback function
+     */
+    listen(event, handler) {
+
+        // If the event doesn't exist, create it
+        if (!eventBus[event]) eventBus[event] = [];
+
+        // Add the handler to the event
+        eventBus[event].push(handler);
+    },
+
+    /**
+     * Remove a global event listener
+     * 
+     * @param {string} event - The event name
+     * @param {Function} handler - The callback function to remove
+     */
+    forget(event, handler) {
+
+        // If the event exists
+        if (eventBus[event]) {
+
+            // Remove the handler from the event
+            eventBus[event] = eventBus[event].filter(h => h !== handler);
+
+            // If no handlers remain, delete the event
+            if (eventBus[event].length === 0) delete eventBus[event];
+        }
+    }
+};

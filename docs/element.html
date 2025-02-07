@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnJS Component Example</title>
+    <script src="./almostno.min.js"></script>
+    <script type="module">
+        // Import AnJSElement utilities
+        import { AnJSElement, html, registerComponent } from "./element.js";
+
+        // Define `LiveClock` component
+        class LiveClock extends AnJSElement {
+
+            // Component state
+            constructor() {
+                super();
+
+                // Initialize state with current time
+                this.state.time = new Date().toLocaleTimeString();
+            }
+
+            // Lifecycle: Start clock updates when added to the DOM
+            connectedCallback() {
+                super.connectedCallback();
+                // Update clock every second
+                this.timer = setInterval(() => {
+
+                    // Update state with current time
+                    this.state.time = new Date().toLocaleTimeString();
+
+                    // Force component re-render
+                    this.update();
+
+                }, 1000);
+            }
+
+            // Lifecycle: Stop clock updates when removed
+            disconnectedCallback() {
+                clearInterval(this.timer);
+            }
+
+            // Render the clock
+            render() {
+                return html`<div id="clock">${this.state.time}</div>`;
+            }
+        }
+
+        /**
+         * Register the `LiveClock` component
+         * 
+         * There are two ways to register:
+         * 
+         * - **Option 1 (Direct Import)**: Use `registerComponent()` when working with ES modules.
+         * - **Option 2 (AnJS API)**: Use `$.defineElement()` for consistency within AnJS.
+         * 
+         * Ensure `$.defineElement()` is implemented before using.
+         */
+
+        /* (Option 1) Register using `registerComponent` */
+        registerComponent("live-clock", LiveClock);
+
+        /* (Option 2) Register using `$.defineElement()` */
+        // $.defineElement("live-clock", LiveClock);
+    </script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        #clock {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Live Clock Component</h1>
+
+    <!-- Use the component -->
+    <live-clock></live-clock>
+
+</body>
+
+</html>

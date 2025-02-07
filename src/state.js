@@ -24,18 +24,60 @@ const boolAttrs = new Set([
  * 
  * @param {string} name - The unique global state name.
  * @param {Object} [initial] - The initial state values (optional).
+ * @param {Object} [options] - State options (`{ persist: "local" | "session" }`).
  * @returns {Proxy} - The reactive global state object.
  */
-AnJS.prototype.global = function (name, initial) {
+AnJS.prototype.global = function (name, initial, options = {}) {
 
     // Ensure valid state name
     if (!name || typeof name !== "string") throw new Error("Global state must have a unique name.");
 
-    // Return existing state if already initialized
-    if (!globalStates[name] && !initial) throw new Error(`Global state "${name}" does not exist. Provide an initial state.`);
+    // If no initial state and state doesn't exist, throw an error (restoring original test behavior)
+    if (!globalStates[name] && initial === undefined) throw new Error(`Global state "${name}" does not exist. Provide an initial state.`);
 
-    // Register new global state if needed
-    return globalStates[name] ??= this.state(initial);
+    // Load persisted state if enabled
+    if (options.persist) {
+
+        // Determine storage type
+        const storage = options.persist === "session" ? sessionStorage : localStorage;
+
+        // Load saved state from storage
+        const saved = storage.getItem(name);
+
+        // Use saved state if available
+        if (saved) initial = JSON.parse(saved);
+    }
+
+    // Register new state only if it's missing
+    if (!globalStates[name] && initial !== undefined) {
+
+        // Create new global state
+        globalStates[name] = $.state(persistent(name, initial, options.persist));
+    }
+
+    // Return the global state
+    return globalStates[name];
+};
+
+/**
+ * Clear a **global state** (removes from memory and storage)
+ * 
+ * @param {string} name - The global state name to clear.
+ */
+AnJS.prototype.clearGlobal = function (name) {
+
+    // Ensure the state exists before clearing
+    if (globalStates[name]) {
+
+        // Remove from in-memory storage
+        delete globalStates[name];
+
+        // Remove from persistent storage (local)
+        localStorage.removeItem(name);
+
+        // Remove from persistent storage (session)
+        sessionStorage.removeItem(name);
+    }
 };
 
 /**
@@ -290,3 +332,41 @@ AnJS.prototype.unbind = function (state) {
     // Remove from local bindings
     localBindings.delete(state);
 };
+
+
+/**
+ * Create a **reactive state object** with persistence
+ * 
+ * @param {string} name - The global state name.
+ * @param {Object} initial - The initial state values.
+ * @param {string} [persist] - Storage type (`"local"` or `"session"`).
+ * @returns {Proxy} - The reactive proxy object.
+ */
+function persistent(name, initial, persist) {
+
+    // Define reactive state with a Proxy
+    return new Proxy(initial, {
+
+        // Retrieve property
+        get: (target, prop) => target[prop],
+
+        // Update property & auto-save if persistence is enabled
+        set: (target, prop, value) => {
+
+            // Assign new value
+            target[prop] = value;
+
+            // Persist updated state if needed
+            if (persist) {
+
+                // Determine correct storage type
+                const storage = persist === "session" ? sessionStorage : localStorage;
+
+                // Save updated state
+                storage.setItem(name, JSON.stringify(target));
+            }
+
+            return true;
+        }
+    });
+}

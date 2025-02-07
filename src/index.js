@@ -5,19 +5,24 @@ import AnJS from './core.js';
 import './animate.js';
 import './attributes.js';
 import './dom.js';
-import './events.js';
 import './filtering.js';
 import './state.js';
 import './traversal.js';
-
-// Alias methods
-import './alias.js';
 
 // Utilities
 import http from './request.js';
 import utils from './utilities.js';
 import extend from './extend.js';
 import components from './component.js';
+
+// AnJS Events System
+import { bus } from './events.js';
+
+// AnJS Element System
+import './element.js';
+
+// Alias methods
+import './alias.js';
 
 /**
  * Factory function for creating AnJS instances
@@ -39,7 +44,10 @@ function $(selector) {
 });
 
 // Attach utilities to `$`
-Object.assign($, http, utils, extend, components);
+Object.assign($, bus, http, utils, extend, components);
+
+// Define custom element
+$["define"] = (name, componentClass) => customElements.define(name, componentClass);
 
 // Attach to `window` if in browser
 if (typeof window !== "undefined") window.$ = $;
@@ -49,3 +57,12 @@ export default $;
 
 // Named export
 export { $ };
+
+/**
+ * Feature Improvements:
+ * 
+ * // TODO: Explore state persistence for components.
+ * // TODO: Explore lightweight event-bus for communication between components.
+ * // TODO: Consider lifecycle hooks (onMount(), onDestroy()) for advanced use cases.
+ * // TODO: Consider adding built-in routing for single-page applications.
+ */

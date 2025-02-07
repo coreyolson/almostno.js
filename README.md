@@ -5,17 +5,18 @@
 ![Minified + Gzip](https://img.shields.io/bundlephobia/minzip/almostnojs)
 ![Flexible & Easy to Learn](https://img.shields.io/badge/flexible-Easy%20to%20Learn-gold)
 
-AlmostNo.js is a lightweight JavaScript library (~11 KB minified, ~4 KB gzipped) designed for DOM manipulation, event handling, animations, and state management. It follows a minimalist approach similar to Zepto.js, making it a fast, modern alternative with a familiar API.
+AlmostNo.js is a lightweight JavaScript library (~4 KB gzipped) designed for DOM manipulation, event handling, animations, and state management. It follows a minimalist approach, making it a fast, modern alternative with a familiar API.
 
 ## Features
 
 - **Tiny & Fast** – Small file size with no dependencies.
-- **Chainable API** – Similar to jQuery/Zepto for clean, readable code.
+- **Chainable API** – Familiar $().method() syntax for clean, readable code.
 - **DOM Manipulation** – Select, traverse, and modify elements effortlessly.
 - **Events** – Attach, delegate, and trigger events easily.
 - **Animations** – Simple CSS-based animations.
 - **State Management** – Lightweight state bindings.
-- **Convenience Fetch API** – Wrappers for HTTP requests with optional timeout handling.
+- **Components** – Create reusable components with ease.
+- **Easier Fetch API** – Wrappers for HTTP requests & timeout handling.
 - **Utility Functions** – Small but useful built-in helpers.
 
 ## Examples
@@ -280,22 +281,15 @@ $.get('/api/slow-response', { timeout: 3000 }) // Auto-aborts after 3 seconds
 - `.hide()` – Hide elements.
 - `.show()` – Show elements.
 
-## Comparisons
-
-| Feature | AlmostNo.js | Zepto | jQuery |
-|---------|------------|--------|--------|
-| DOM Manipulation | ✅ | ✅ | ✅ |
-| Event Handling | ✅ | ✅ | ✅ |
-| AJAX/Fetch Wrappers | ✅ | ✅ | ✅ |
-| Animations | ✅ | ✅ | ✅ |
-| State Management | ✅ | ❌ | ❌ |
-| Modern API (ES2020) | ✅ | ✅ | ❌ |
-
 ## Why AlmostNo.js?
 - **Modern & Minimalist** – Small size, no legacy baggage.
+- **Easy to Learn** – Simple, intuitive API for quick adoption.
 - **Fast & Lightweight** – Ideal for performance-sensitive applications.
-- **Convenient Fetch API** – Provides wrappers over `fetch`, similar to Axios.
-- **Familiar API** – Works like jQuery but optimized for modern web development.
+- **Great Features** – Includes DOM manipulation, events, animations, state, and components.
+- **Convenient Fetch API** – Provides wrappers over `fetch` with optional timeout handling.
+- **Flexible & Extensible** – Easily extend functionality with custom methods and components.
+- **Reactive State Management** – Lightweight state bindings for creating reactive applications.
+- **Reusable Components** – Create and use reusable components with ease.
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

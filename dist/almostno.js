@@ -299,92 +299,6 @@
     }
   });
 
-  // src/events.js
-  var eventStore = /* @__PURE__ */ new WeakMap();
-  Object.assign(AnJS.prototype, {
-    /**
-     * Attach an event listener (direct or delegated)
-     * 
-     * @param {string} event - Event type (e.g., 'click')
-     * @param {string | Function} selector - Selector for delegation or event handler
-     * @param {Function} [handler] - Event handler if delegation is used
-     * @returns {AnJS} - Chainable instance
-     */
-    on(event, selector, handler) {
-      return typeof selector === "function" ? this.delegate(event, null, selector) : this.delegate(event, selector, handler);
-    },
-    /**
-     * Remove an event listener (direct or delegated)
-     * 
-     * @param {string} event - Event type (e.g., 'click')
-     * @param {string | Function} selector - Selector for delegation or event handler
-     * @param {Function} [handler] - Event handler if delegation is used
-     * @returns {AnJS} - Chainable instance
-     */
-    off(event, selector, handler) {
-      return typeof selector === "function" ? this.undelegate(event, null, selector) : this.undelegate(event, selector, handler);
-    },
-    /**
-     * Attach a delegated event listener using WeakMap for storage
-     * 
-     * @param {string} event - Event type (e.g., 'click')
-     * @param {string | null} selector - Selector to match (e.g., '.btn') or `null` for direct binding
-     * @param {Function} handler - Event callback function
-     * @returns {AnJS} - Chainable instance
-     */
-    delegate(event, selector, handler) {
-      return this.each((el) => {
-        if (!eventStore.has(el)) eventStore.set(el, {});
-        const events = eventStore.get(el);
-        if (!events[event]) events[event] = [];
-        const delegateHandler = (e) => {
-          const target = selector ? e.target.closest(selector) : el;
-          if (target && el.contains(target)) handler.call(target, e);
-        };
-        events[event].push({ selector, handler, delegateHandler });
-        el.addEventListener(event, delegateHandler);
-      });
-    },
-    /**
-     * Remove a delegated event listener using WeakMap
-     * 
-     * @param {string} event - Event type (e.g., 'click')
-     * @param {string | null} selector - Selector for delegation or `null` for direct binding
-     * @param {Function} [handler] - Specific handler to remove (optional)
-     * @returns {AnJS} - Chainable instance
-     */
-    undelegate(event, selector, handler) {
-      return this.each((el) => {
-        if (!eventStore.has(el)) return;
-        const events = eventStore.get(el);
-        if (!events[event]) return;
-        if (!handler) {
-          events[event].forEach((item) => el.removeEventListener(event, item.delegateHandler));
-          delete events[event];
-        } else {
-          events[event] = events[event].filter((item) => {
-            if (item.selector === selector && item.handler === handler) {
-              el.removeEventListener(event, item.delegateHandler);
-              return false;
-            }
-            return true;
-          });
-          if (events[event].length === 0) delete events[event];
-        }
-        if (Object.keys(events).length === 0) eventStore.delete(el);
-      });
-    },
-    /**
-     * Trigger a custom event on elements
-     * 
-     * @param {string} event - Event type to trigger (e.g., 'click')
-     * @returns {AnJS} - Chainable instance
-     */
-    trigger(event) {
-      return this.each((el) => el.dispatchEvent(new Event(event, { bubbles: true })));
-    }
-  });
-
   // src/filtering.js
   Object.assign(AnJS.prototype, {
     /**
@@ -457,10 +371,25 @@
     "loop",
     "muted"
   ]);
-  AnJS.prototype.global = function(name, initial) {
+  AnJS.prototype.global = function(name, initial, options = {}) {
     if (!name || typeof name !== "string") throw new Error("Global state must have a unique name.");
-    if (!globalStates[name] && !initial) throw new Error(`Global state "${name}" does not exist. Provide an initial state.`);
-    return globalStates[name] ?? (globalStates[name] = this.state(initial));
+    if (!globalStates[name] && initial === void 0) throw new Error(`Global state "${name}" does not exist. Provide an initial state.`);
+    if (options.persist) {
+      const storage = options.persist === "session" ? sessionStorage : localStorage;
+      const saved = storage.getItem(name);
+      if (saved) initial = JSON.parse(saved);
+    }
+    if (!globalStates[name] && initial !== void 0) {
+      globalStates[name] = $.state(persistent(name, initial, options.persist));
+    }
+    return globalStates[name];
+  };
+  AnJS.prototype.clearGlobal = function(name) {
+    if (globalStates[name]) {
+      delete globalStates[name];
+      localStorage.removeItem(name);
+      sessionStorage.removeItem(name);
+    }
   };
   AnJS.prototype.hasGlobal = function(name) {
     return !!globalStates[name];
@@ -555,6 +484,21 @@
     [bindings, attrBindings].forEach((obj) => Object.keys(state).forEach((prop) => delete obj[prop]));
     localBindings.delete(state);
   };
+  function persistent(name, initial, persist) {
+    return new Proxy(initial, {
+      // Retrieve property
+      get: (target, prop) => target[prop],
+      // Update property & auto-save if persistence is enabled
+      set: (target, prop, value) => {
+        target[prop] = value;
+        if (persist) {
+          const storage = persist === "session" ? sessionStorage : localStorage;
+          storage.setItem(name, JSON.stringify(target));
+        }
+        return true;
+      }
+    });
+  }
 
   // src/traversal.js
   Object.assign(AnJS.prototype, {
@@ -608,21 +552,6 @@
     closest(selector) {
       return new AnJS(this[0]?.closest(selector) ? [this[0].closest(selector)] : []);
     }
-  });
-
-  // src/alias.js
-  ["append", "prepend", "before", "after"].forEach(
-    (method) => (
-      // Create alias method
-      AnJS.prototype[method] = function(content) {
-        return this.insert(content, method);
-      }
-    )
-  );
-  ["click", "change", "submit", "keydown", "keyup", "mouseover", "mouseout"].forEach((event) => {
-    AnJS.prototype[event] = function(callback) {
-      return callback ? this.on(event, callback) : this.trigger(event);
-    };
   });
 
   // src/request.js
@@ -844,6 +773,141 @@
   startObserver();
   var component_default = components;
 
+  // src/events.js
+  var eventStore = /* @__PURE__ */ new WeakMap();
+  Object.assign(AnJS.prototype, {
+    /**
+     * Attach an event listener (direct or delegated)
+     * 
+     * @param {string} event - Event type (e.g., 'click')
+     * @param {string | Function} selector - Selector for delegation or event handler
+     * @param {Function} [handler] - Event handler if delegation is used
+     * @returns {AnJS} - Chainable instance
+     */
+    on(event, selector, handler) {
+      return typeof selector === "function" ? this.delegate(event, null, selector) : this.delegate(event, selector, handler);
+    },
+    /**
+     * Remove an event listener (direct or delegated)
+     * 
+     * @param {string} event - Event type (e.g., 'click')
+     * @param {string | Function} selector - Selector for delegation or event handler
+     * @param {Function} [handler] - Event handler if delegation is used
+     * @returns {AnJS} - Chainable instance
+     */
+    off(event, selector, handler) {
+      return typeof selector === "function" ? this.undelegate(event, null, selector) : this.undelegate(event, selector, handler);
+    },
+    /**
+     * Attach a delegated event listener using WeakMap for storage
+     * 
+     * @param {string} event - Event type (e.g., 'click')
+     * @param {string | null} selector - Selector to match (e.g., '.btn') or `null` for direct binding
+     * @param {Function} handler - Event callback function
+     * @returns {AnJS} - Chainable instance
+     */
+    delegate(event, selector, handler) {
+      return this.each((el) => {
+        if (!eventStore.has(el)) eventStore.set(el, {});
+        const events = eventStore.get(el);
+        if (!events[event]) events[event] = [];
+        const delegateHandler = (e) => {
+          const target = selector ? e.target.closest(selector) : el;
+          if (target && el.contains(target)) handler.call(target, e);
+        };
+        events[event].push({ selector, handler, delegateHandler });
+        el.addEventListener(event, delegateHandler);
+      });
+    },
+    /**
+     * Remove a delegated event listener using WeakMap
+     * 
+     * @param {string} event - Event type (e.g., 'click')
+     * @param {string | null} selector - Selector for delegation or `null` for direct binding
+     * @param {Function} [handler] - Specific handler to remove (optional)
+     * @returns {AnJS} - Chainable instance
+     */
+    undelegate(event, selector, handler) {
+      return this.each((el) => {
+        if (!eventStore.has(el)) return;
+        const events = eventStore.get(el);
+        if (!events[event]) return;
+        if (!handler) {
+          events[event].forEach((item) => el.removeEventListener(event, item.delegateHandler));
+          delete events[event];
+        } else {
+          events[event] = events[event].filter((item) => {
+            if (item.selector === selector && item.handler === handler) {
+              el.removeEventListener(event, item.delegateHandler);
+              return false;
+            }
+            return true;
+          });
+          if (events[event].length === 0) delete events[event];
+        }
+        if (Object.keys(events).length === 0) eventStore.delete(el);
+      });
+    },
+    /**
+     * Trigger a custom event on elements
+     * 
+     * @param {string} event - Event type to trigger (e.g., 'click')
+     * @returns {AnJS} - Chainable instance
+     */
+    trigger(event) {
+      return this.each((el) => el.dispatchEvent(new Event(event, { bubbles: true })));
+    }
+  });
+  var eventBus = {};
+  var bus = {
+    /**
+     * Emit a global event
+     * 
+     * @param {string} event - The event name
+     * @param {any} [data] - Optional data to send
+     */
+    emit(event, data) {
+      eventBus[event]?.forEach((handler) => handler(data));
+    },
+    /**
+     * Listen for a global event
+     * 
+     * @param {string} event - The event name
+     * @param {Function} handler - The callback function
+     */
+    listen(event, handler) {
+      if (!eventBus[event]) eventBus[event] = [];
+      eventBus[event].push(handler);
+    },
+    /**
+     * Remove a global event listener
+     * 
+     * @param {string} event - The event name
+     * @param {Function} handler - The callback function to remove
+     */
+    forget(event, handler) {
+      if (eventBus[event]) {
+        eventBus[event] = eventBus[event].filter((h) => h !== handler);
+        if (eventBus[event].length === 0) delete eventBus[event];
+      }
+    }
+  };
+
+  // src/alias.js
+  ["append", "prepend", "before", "after"].forEach(
+    (method) => (
+      // Create alias method
+      AnJS.prototype[method] = function(content) {
+        return this.insert(content, method);
+      }
+    )
+  );
+  ["click", "change", "submit", "keydown", "keyup", "mouseover", "mouseout"].forEach((event) => {
+    AnJS.prototype[event] = function(callback) {
+      return callback ? this.on(event, callback) : this.trigger(event);
+    };
+  });
+
   // src/index.js
   function $2(selector) {
     return new AnJS(selector);
@@ -851,7 +915,8 @@
   ["on", "off", "trigger", "state", "global", "component"].forEach((method) => {
     $2[method] = (...args) => AnJS.prototype[method].apply($2(), args);
   });
-  Object.assign($2, request_default, utilities_default, extend_default, component_default);
+  Object.assign($2, bus, request_default, utilities_default, extend_default, component_default);
+  $2["define"] = (name, componentClass) => customElements.define(name, componentClass);
   if (typeof window !== "undefined") window.$ = $2;
   var index_default = $2;
 })();
