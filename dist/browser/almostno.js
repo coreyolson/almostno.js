@@ -1,4 +1,4 @@
-/* AlmostNo.js v1.1.2 Core */
+/* AlmostNo.js v1.1.3 Core */
 (() => {
   var __defProp = Object.defineProperty;
   var __getOwnPropNames = Object.getOwnPropertyNames;

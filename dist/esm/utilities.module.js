@@ -1,4 +1,4 @@
-/* AlmostNo.js v1.1.2 Utilities (ESM) */
+/* AlmostNo.js v1.1.3 Utilities (ESM) */
 
 // src/utilities.js
 var trim = (string) => string.trim();
@@ -42,4 +42,3 @@ var utilities_default = { trim, json, range, isFunction, isObject, isString, isN
 export {
   utilities_default as default
 };
-export { $ };

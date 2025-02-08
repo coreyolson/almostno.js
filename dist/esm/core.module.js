@@ -1,4 +1,4 @@
-/* AlmostNo.js v1.1.2 Core (ESM) */
+/* AlmostNo.js v1.1.3 Core (ESM) */
 
 // src/core.js
 var globalScope = typeof window !== "undefined" ? window : global;
@@ -51,4 +51,3 @@ var core_default = globalScope.__AnJS__;
 export {
   core_default as default
 };
-export { $ };

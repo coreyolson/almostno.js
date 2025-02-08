@@ -1,4 +1,4 @@
-/* AlmostNo.js v1.1.2 Events (ESM) */
+/* AlmostNo.js v1.1.3 Events (ESM) */
 
 // src/core.js
 var globalScope = typeof window !== "undefined" ? window : global;
@@ -171,4 +171,3 @@ var bus = {
 export {
   bus
 };
-export { $ };

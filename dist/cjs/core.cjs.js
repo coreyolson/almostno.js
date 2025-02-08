@@ -1,4 +1,4 @@
-/* AlmostNo.js v1.1.2 Core (CJS) */
+/* AlmostNo.js v1.1.3 Core (CJS) */
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
@@ -70,4 +70,3 @@ if (!globalScope.__AnJS__) {
   globalScope.__AnJS__ = AnJS;
 }
 var core_default = globalScope.__AnJS__;
-export { $ };

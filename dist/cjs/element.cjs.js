@@ -1,4 +1,4 @@
-/* AlmostNo.js v1.1.2 Element (CJS) */
+/* AlmostNo.js v1.1.3 Element (CJS) */
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
@@ -73,4 +73,3 @@ var AnJSElement = class extends HTMLElement {
     return `<p>${this.constructor.name} is not implemented yet.</p>`;
   }
 };
-export { $ };

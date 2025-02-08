@@ -1,4 +1,4 @@
-/* AlmostNo.js v1.1.2 Element (ESM) */
+/* AlmostNo.js v1.1.3 Element (ESM) */
 
 // src/element.js
 var html = (strings, ...values) => (
@@ -54,4 +54,3 @@ export {
   html,
   registerComponent
 };
-export { $ };

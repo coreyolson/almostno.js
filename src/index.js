@@ -55,6 +55,9 @@ if (typeof window !== "undefined") window.$ = $;
 // Export module
 export default $;
 
+// Export 
+export { AnJSElement, html, registerComponent } from './element.js';
+
 /**
  * Feature Improvements:
  *

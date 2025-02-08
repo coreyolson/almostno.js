@@ -1,4 +1,4 @@
-/* AlmostNo.js v1.1.2 Extend (CJS) */
+/* AlmostNo.js v1.1.3 Extend (CJS) */
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
@@ -83,4 +83,3 @@ var extend = function(name, func, force = false) {
   core_default.prototype[name] = func;
 };
 var extend_default = { extend };
-export { $ };

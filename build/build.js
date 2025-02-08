@@ -201,7 +201,7 @@ function build(variant) {
             Object.entries(variant.defines).map(([key, value]) => [`FEATURE_${key.toUpperCase()}`, value ? "true" : "false"])
         ),
         banner: { js: `/* AlmostNo.js v${version} ${variant.name} */` },
-        footer: variant.format === "iife" ? { js: `window.$ = $;` } : { js: `export { $ };` }
+        footer: variant.format === "iife" ? { js: `window.$ = $;` } : { js: '' }
     };
 
     // Build Browser Version (Regular, Includes Source Maps)

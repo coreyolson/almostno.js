@@ -1,4 +1,4 @@
-/* AlmostNo.js v1.1.2 Request (CJS) */
+/* AlmostNo.js v1.1.3 Request (CJS) */
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
@@ -137,4 +137,3 @@ var http = {
   abortController: () => new AbortController()
 };
 var request_default = http;
-export { $ };

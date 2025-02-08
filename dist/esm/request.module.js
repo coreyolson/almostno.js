@@ -1,4 +1,4 @@
-/* AlmostNo.js v1.1.2 Request (ESM) */
+/* AlmostNo.js v1.1.3 Request (ESM) */
 
 // src/core.js
 var globalScope = typeof window !== "undefined" ? window : global;
@@ -116,4 +116,3 @@ export {
   http,
   request
 };
-export { $ };

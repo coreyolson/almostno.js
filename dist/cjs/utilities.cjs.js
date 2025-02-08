@@ -1,4 +1,4 @@
-/* AlmostNo.js v1.1.2 Utilities (CJS) */
+/* AlmostNo.js v1.1.3 Utilities (CJS) */
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
@@ -61,4 +61,3 @@ var element = (tag, attrs = {}, children = []) => {
   return el;
 };
 var utilities_default = { trim, json, range, isFunction, isObject, isString, isNumber, contains, debounce, throttle, element };
-export { $ };

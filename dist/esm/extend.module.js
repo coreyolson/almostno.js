@@ -1,4 +1,4 @@
-/* AlmostNo.js v1.1.2 Extend (ESM) */
+/* AlmostNo.js v1.1.3 Extend (ESM) */
 
 // src/core.js
 var globalScope = typeof window !== "undefined" ? window : global;
@@ -62,4 +62,3 @@ var extend_default = { extend };
 export {
   extend_default as default
 };
-export { $ };
