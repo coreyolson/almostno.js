@@ -4,15 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AnJS Events Test</title>
-    <script src="./almostno.min.js"></script>
+    <title>AnJS Event Bus Test</title>
+    <script src="./almostno.full.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
         }
 
         .btn {
-            display: inline-block;
             padding: 10px 20px;
             background: steelblue;
             color: white;
@@ -31,69 +30,79 @@
             margin: 10px;
             border: 1px solid #333;
         }
+
+        #log {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid black;
+            background: #f8f8f8;
+            min-height: 50px;
+        }
     </style>
 </head>
 
 <body>
 
-    <h1>AnJS Event Handling</h1>
+    <h1>AnJS Event Bus Test</h1>
 
-    <!-- Buttons to Attach and Remove Events -->
+    <!-- Buttons for regular event handling -->
     <button class="btn" data-on="click:addEvent">Attach Event</button>
     <button class="btn" data-on="click:removeEvent">Remove Event</button>
     <button class="btn" data-on="click:triggerEvent">Trigger Event</button>
 
-    <!-- Box that will change color when clicked -->
+    <!-- Buttons for event bus -->
+    <button class="btn" data-on="click:listenBus">Listen on Bus</button>
+    <button class="btn" data-on="click:forgetBus">Forget Bus Event</button>
+    <button class="btn" data-on="click:emitBus">Emit Bus Event</button>
+
+    <!-- Box for event testing -->
     <div class="box" id="box">Click Me</div>
 
-    <!-- Delegated Event Test -->
-    <button class="btn" id="addBox">Add Box</button>
-    <div id="container"></div>
+    <!-- Event Log -->
+    <h2>Event Log</h2>
+    <div id="log"></div>
 
     <script>
         // Select elements
-        const container = $("#container");
+        const logBox = $("#log");
 
-        // Actions object with event handlers
+        // Log helper function
+        function log(message) {
+            logBox.insert(`<p>${message}</p>`, "append");
+        }
+
+        // Actions for event handling
         const actions = {
             addEvent() {
                 $("#box").on("click", function () {
                     $(this).css("background", "tomato");
-                    console.log("Box clicked!");
+                    log("Box clicked (Direct Event)!");
                 });
-                console.log("Event Attached!");
+                log("Event Attached!");
             },
             removeEvent() {
                 $("#box").off("click");
-                console.log("Event Removed!");
+                log("Event Removed!");
             },
             triggerEvent() {
                 $("#box").trigger("click");
-                console.log("Event Triggered!");
+                log("Event Triggered!");
             },
-            addBox() {
-                // Create a new div with class "box"
-                const newBox = document.createElement("div");
-                newBox.className = "box";
-                newBox.textContent = "New Box";
-
-                // Append to #container correctly
-                $("#container").insert(newBox, "append");
-
-                console.log("New Box Added!");
+            listenBus() {
+                $.listen("logEvent", message => log(`Event Bus Received: ${message}`));
+                log("Listening for 'logEvent' on Bus.");
+            },
+            forgetBus() {
+                $.forget("logEvent", message => log(`Event Bus Received: ${message}`));
+                log("Stopped listening to 'logEvent' on Bus.");
+            },
+            emitBus() {
+                $.emit("logEvent", "Hello from Event Bus!");
+                log("Event 'logEvent' emitted.");
             }
         };
 
-        // Ensure event delegation works on dynamically added boxes
-        container.on("click", ".box", function () {
-            $(this).css("background", "limegreen");
-            console.log("Delegated Event Fired on:", this);
-        });
-
-        // Bind delegated event
-        $("#addBox").on("click", actions.addBox);
-
-        // Bind actions
+        // Bind actions globally
         $("body").bind(actions);
     </script>
 

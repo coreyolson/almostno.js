@@ -5,13 +5,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AnJS State Test</title>
-    <script src="./almostno.min.js"></script>
+    <script src="./almostno.full.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
         }
 
         button {
+            margin: 5px;
+        }
+
+        .counter {
+            font-size: 18px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            display: inline-block;
             margin: 5px;
         }
     </style>
@@ -23,29 +31,26 @@
 
     <div id="app">
         <!-- Data binding -->
-        <p>Message: <span data-bind="message"></span></p>
+        <p>Message: <span data-bind="app.message"></span></p>
 
         <!-- Attribute binding -->
-        <input type="text" placeholder="Type something..." data-bind-attr="value:message">
+        <input id="someMessage" type="text" placeholder="Type something..." data-bind-attr="value:app.message">
 
         <!-- Button to change state -->
-        <button data-on="click:changeMessage">Change Message</button>
+        <button data-action="app.changeMessage">Change Message</button>
 
         <!-- Counter Test -->
-        <p>Counter: <span data-bind="count"></span></p>
-        <button data-on="click:increment">+1</button>
-        <button data-on="click:decrement">-1</button>
+        <p>Counter: <span data-bind="app.count"></span></p>
+        <button data-action="app.increment">+1</button>
+        <button data-action="app.decrement">-1</button>
     </div>
-
     <script>
-        // Create and auto-bind state to #app
-        const appState = $("#app").state({
+        // App state for the main section
+        $.global("app", {
             message: "Hello, AnJS!",
             count: 0,
-
-            // Methods
             changeMessage() {
-                this.message = "Updated: " + $.trim(this.message);
+                this.message = $('#someMessage').val();
             },
             increment() {
                 this.count++;

@@ -136,7 +136,7 @@ AnJS.prototype.request = function (url, method = 'GET', data = null, options = {
 /**
  * Define HTTP method shortcuts
  */
-const http = {
+export const http = {
 
     // Read operations (safe, idempotent)
     head: (url, options = {}) => request(url, "HEAD", null, options),

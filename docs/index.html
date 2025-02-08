@@ -5,11 +5,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AnJS Examples</title>
-    <script src="./almostno.min.js"></script>
+    <script src="./almostno.full.js"></script>
     <style>
         body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;   
             font-family: Arial, sans-serif;
-            text-align: center;
+            height: 100vh;         
+        }
+
+        .container {
+            text-align: left;
+            width: 80%;  
+            max-width: 600px;
         }
 
         h1 {
@@ -45,25 +55,27 @@
 
 <body>
 
-    <h1>Welcome to AnJS Examples</h1>
-
-    <!-- Live Clock -->
-    <div id="clock" data-bind="time"></div>
-
-    <ul>
-        <li><a href="animate.html">Animations</a></li>
-        <li><a href="attributes.html">Attributes</a></li>
-        <li><a href="core.html">Core Features</a></li>
-        <li><a href="components.html">Components</a></li>
-        <li><a href="dom.html">DOM Manipulation</a></li>
-        <li><a href="elements.html">Elements</a></li>
-        <li><a href="events.html">Events</a></li>
-        <li><a href="filtering.html">Filtering</a></li>
-        <li><a href="request.html">HTTP Requests</a></li>
-        <li><a href="state.html">State Management</a></li>
-        <li><a href="traversal.html">DOM Traversal</a></li>
-        <li><a href="utilities.html">Utilities</a></li>
-    </ul>
+    <div class="container">
+        <h1>Welcome to AnJS Examples</h1>
+        
+        <!-- Live Clock -->
+        <div id="clock" data-bind="time"></div>
+        
+        <ul>
+            <li><a href="animate.html">Animations</a></li>
+            <li><a href="attributes.html">Attributes</a></li>
+            <li><a href="core.html">Core Features</a></li>
+            <li><a href="components.html">Components</a></li>
+            <li><a href="dom.html">DOM Manipulation</a></li>
+            <li><a href="elements.html">Server Side Elements</a> - (Requires Server-side Rendering)</li>
+            <li><a href="events.html">Events</a></li>
+            <li><a href="filtering.html">Filtering</a></li>
+            <li><a href="request.html">HTTP Requests</a></li>
+            <li><a href="state.html">State Management</a></li>
+            <li><a href="traversal.html">DOM Traversal</a></li>
+            <li><a href="utilities.html">Utilities</a></li>
+        </ul>
+    </div>
 
     <script>
         // Create and bind state to #clock

@@ -55,7 +55,59 @@ npm install almostnojs
 ### Self-hosting
 Download the latest release from the `dist/` directory and include it manually:
 ```html
-<script src="./almostno.min.js"></script>
+<script src="./almostno.full.js"></script>
+```
+
+## Choosing the Right Version
+
+AlmostNo.js is available in three main variants, as well as an NPM package (with tree-shaking) so you can perfectly right-size the features to best fit for your project. The prebuilt versions "Core", "Extended" and "Full" are shown by features below.
+
+### Feature Comparison
+
+| Feature                          | Core  | Extended | Full  | NPM  |
+|----------------------------------|-------|----------|-------|------|
+| **DOM Manipulation**             | ✅    | ✅       | ✅    | ✅   |
+| **Events**                       | ✅    | ✅       | ✅    | ✅   |
+| **Attributes**                   | ✅    | ✅       | ✅    | ✅   |
+| **HTTP Requests**                | ✅    | ✅       | ✅    | ✅   |
+| **Animations**                   | ❌    | ✅       | ✅    | ✅   |
+| **Filtering & Traversal** | ❌    | ✅       | ✅    | ✅   |
+| **State Management**             | ❌    | ❌       | ✅    | ✅   |
+| **Components**                   | ❌    | ❌       | ✅    | ✅   |
+| **SSR Elements**                 | ❌    | ❌       | ❌    | ✅   |
+
+---
+
+### File Size & Distribution Paths
+
+| Version      | Minified + Gzipped | File Path |
+|-------------|--------------------|-----------|
+| **Core**    | ![Core](https://img.shields.io/badge/size-2.5%20KB-blue) | `/dist/browser/almostno.js` |
+| **Extended** | ![Extended](https://img.shields.io/badge/size-2.9%20KB-blue) | `/dist/browser/almostno.extended.js` |
+| **Full**    | ![Full](https://img.shields.io/badge/size-4.7%20KB-blue) | `/dist/browser/almostno.full.js` |
+
+
+### Which Version Should I Use?
+
+- **Use `Core`** for the **lightest build** with DOM, events, attributes, and utilities.
+- **Use `Extended`** if you need **filtering, traversal, and animations** for a richer UI.
+- **Use `Full`** if you need **state management, components, and reactivity**.
+- **Use `NPM`** if you want **everything with tree-shaking support**.
+
+### How to Include AlmostNo.js
+
+#### **CDN (For Browser Use)**
+Include one of the following in your HTML:
+
+```html
+<!-- AlmostNo.js (Full) - Choose ONE CDN -->
+
+<!-- jsDelivr -->
+<script src="https://cdn.jsdelivr.net/npm/almostnojs@latest/dist/cdn/almostno.full.js"></script>
+
+<!-- UNPKG -->
+<script src="https://unpkg.com/almostnojs@latest/dist/cdn/almostno.full.js"></script>
+
 ```
 
 ## Basic Usage
@@ -63,7 +115,7 @@ AlmostNo.js provides a simple and intuitive API for common tasks.
 
 ### Select Elements
 ```js
-$('div').addClass('active');
+$('div').text('Hello, World!');
 ```
 
 ### Handle Events
