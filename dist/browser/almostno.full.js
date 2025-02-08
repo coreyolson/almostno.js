@@ -1,4 +1,4 @@
-/* AlmostNo.js v1.1.1 Full */
+/* AlmostNo.js v1.1.2 Full */
 (() => {
   var __defProp = Object.defineProperty;
   var __getOwnPropNames = Object.getOwnPropertyNames;
@@ -11,51 +11,56 @@
   };
 
   // src/core.js
-  var AnJS;
+  var globalScope, core_default;
   var init_core = __esm({
     "src/core.js"() {
-      AnJS = class extends Array {
-        /**
-         * Initialize AnJS
-         * 
-         * @param {string | HTMLElement | NodeList} query - CSS selector or element.
-         */
-        constructor(query) {
-          super();
-          if (!query) return;
-          if (query instanceof HTMLElement || query.nodeType === 1) this.push(query);
-          else if (query instanceof NodeList || Array.isArray(query)) this.push(...query);
-          else if (typeof query === "string") this.push(...document.querySelectorAll(query));
+      globalScope = typeof window !== "undefined" ? window : global;
+      if (!globalScope.__AnJS__) {
+        class AnJS extends Array {
+          /**
+           * Initialize AnJS
+           * 
+           * @param {string | HTMLElement | NodeList} query - CSS selector or element.
+           */
+          constructor(query) {
+            super();
+            if (!query) return;
+            if (query instanceof HTMLElement || query.nodeType === 1) this.push(query);
+            else if (query instanceof NodeList || Array.isArray(query)) this.push(...query);
+            else if (typeof query === "string") this.push(...document.querySelectorAll(query));
+          }
+          /**
+           * Iterate through elements
+           * 
+           * @param {Function} fn - Callback function.
+           * @returns {AnJS} - Returns self for chaining.
+           */
+          each(fn) {
+            this.forEach(fn);
+            return this;
+          }
+          /**
+           * Get elements by index or return all
+           * 
+           * @param {number} [index] - The index of the element to retrieve.
+           * @returns {HTMLElement | Array} - The specific element or an array of elements.
+           */
+          get(index) {
+            return index === void 0 ? this : this.at(index);
+          }
+          /**
+           * Clone the first selected element
+           * 
+           * @param {boolean} [deep=true] - Clone children.
+           * @returns {HTMLElement | null} - Cloned element.
+           */
+          clone(deep = true) {
+            return this[0] ? this[0].cloneNode(deep) : null;
+          }
         }
-        /**
-         * Iterate through elements
-         * 
-         * @param {Function} fn - Callback function.
-         * @returns {AnJS} - Returns self for chaining.
-         */
-        each(fn) {
-          this.forEach(fn);
-          return this;
-        }
-        /**
-         * Get elements by index or return all
-         * 
-         * @param {number} [index] - The index of the element to retrieve.
-         * @returns {HTMLElement | Array} - The specific element or an array of elements.
-         */
-        get(index) {
-          return index === void 0 ? this : this.at(index);
-        }
-        /**
-         * Clone the first selected element
-         * 
-         * @param {boolean} [deep=true] - Clone children.
-         * @returns {HTMLElement | null} - Cloned element.
-         */
-        clone(deep = true) {
-          return this[0] ? this[0].cloneNode(deep) : null;
-        }
-      };
+        globalScope.__AnJS__ = AnJS;
+      }
+      core_default = globalScope.__AnJS__;
     }
   });
 
@@ -64,7 +69,7 @@
   var init_filtering = __esm({
     "src/filtering.js"() {
       init_core();
-      Object.assign(AnJS.prototype, {
+      Object.assign(core_default.prototype, {
         /**
          * Filter elements based on a callback function or CSS selector
          * 
@@ -72,8 +77,8 @@
          * @returns {AnJS} - Returns a new instance of AnJS.
          */
         filter(callbackOrSelector) {
-          if (typeof callbackOrSelector === "function") return new AnJS([...this].filter(callbackOrSelector));
-          return new AnJS([...this].filter((el) => el.matches(callbackOrSelector)));
+          if (typeof callbackOrSelector === "function") return new core_default([...this].filter(callbackOrSelector));
+          return new core_default([...this].filter((el) => el.matches(callbackOrSelector)));
         },
         /**
          * Find child elements by a CSS selector
@@ -82,7 +87,7 @@
          * @returns {AnJS} - Returns a new instance of AnJS.
          */
         find(selector) {
-          return new AnJS(this.flatMap((el) => [...el.querySelectorAll(selector)]));
+          return new core_default(this.flatMap((el) => [...el.querySelectorAll(selector)]));
         },
         /**
          * Select the first element from the current selection
@@ -90,7 +95,7 @@
          * @returns {AnJS} - Returns a new instance of AnJS.
          */
         first() {
-          return new AnJS(this.length ? [this[0]] : []);
+          return new core_default(this.length ? [this[0]] : []);
         },
         /**
          * Select the last element from the current selection
@@ -98,7 +103,7 @@
          * @returns {AnJS} - Returns a new instance of AnJS.
          */
         last() {
-          return new AnJS(this.length ? [this[this.length - 1]] : []);
+          return new core_default(this.length ? [this[this.length - 1]] : []);
         },
         /**
          * Select only elements with an even index
@@ -106,7 +111,7 @@
          * @returns {AnJS} - Returns a new instance of AnJS.
          */
         even() {
-          return new AnJS(this.filter((_, index) => !(index % 2)));
+          return new core_default(this.filter((_, index) => !(index % 2)));
         },
         /**
          * Select only elements with an odd index
@@ -114,7 +119,7 @@
          * @returns {AnJS} - Returns a new instance of AnJS.
          */
         odd() {
-          return new AnJS(this.filter((_, index) => index % 2));
+          return new core_default(this.filter((_, index) => index % 2));
         }
       });
     }
@@ -125,14 +130,14 @@
   var init_traversal = __esm({
     "src/traversal.js"() {
       init_core();
-      Object.assign(AnJS.prototype, {
+      Object.assign(core_default.prototype, {
         /**
          * Select the next sibling element
          * 
          * @returns {AnJS} - New AnJS instance with the next sibling.
          */
         next() {
-          return new AnJS(this[0]?.nextElementSibling ? [this[0].nextElementSibling] : []);
+          return new core_default(this[0]?.nextElementSibling ? [this[0].nextElementSibling] : []);
         },
         /**
          * Select the previous sibling element
@@ -140,7 +145,7 @@
          * @returns {AnJS} - New AnJS instance with the previous sibling.
          */
         prev() {
-          return new AnJS(this[0]?.previousElementSibling ? [this[0].previousElementSibling] : []);
+          return new core_default(this[0]?.previousElementSibling ? [this[0].previousElementSibling] : []);
         },
         /**
          * Select the parent element
@@ -148,7 +153,7 @@
          * @returns {AnJS} - New AnJS instance with the parent.
          */
         parent() {
-          return new AnJS(this[0]?.parentElement ? [this[0].parentElement] : []);
+          return new core_default(this[0]?.parentElement ? [this[0].parentElement] : []);
         },
         /**
          * Select child elements
@@ -156,7 +161,7 @@
          * @returns {AnJS} - New AnJS instance with children.
          */
         children() {
-          return new AnJS(this[0] ? [...this[0].children] : []);
+          return new core_default(this[0] ? [...this[0].children] : []);
         },
         /**
          * Select all sibling elements
@@ -165,7 +170,7 @@
          */
         siblings() {
           const parent = this[0]?.parentElement;
-          return new AnJS(parent ? [...parent.children].filter((el) => el !== this[0]) : []);
+          return new core_default(parent ? [...parent.children].filter((el) => el !== this[0]) : []);
         },
         /**
          * Select the closest ancestor matching a selector
@@ -174,7 +179,7 @@
          * @returns {AnJS} - New AnJS instance with the closest matching ancestor.
          */
         closest(selector) {
-          return new AnJS(this[0]?.closest(selector) ? [this[0].closest(selector)] : []);
+          return new core_default(this[0]?.closest(selector) ? [this[0].closest(selector)] : []);
         }
       });
     }
@@ -221,7 +226,7 @@
         "loop",
         "muted"
       ]);
-      AnJS.prototype.global = function(name, initial, options = {}) {
+      core_default.prototype.global = function(name, initial, options = {}) {
         if (!name || typeof name !== "string") throw new Error("Global state must have a unique name.");
         if (!globalStates[name] && initial === void 0) throw new Error(`Global state "${name}" does not exist. Provide an initial state.`);
         if (options.persist) {
@@ -234,17 +239,17 @@
         }
         return globalStates[name];
       };
-      AnJS.prototype.clearGlobal = function(name) {
+      core_default.prototype.clearGlobal = function(name) {
         if (globalStates[name]) {
           delete globalStates[name];
           localStorage.removeItem(name);
           sessionStorage.removeItem(name);
         }
       };
-      AnJS.prototype.hasGlobal = function(name) {
+      core_default.prototype.hasGlobal = function(name) {
         return !!globalStates[name];
       };
-      AnJS.prototype.state = function(initial = {}, options = {}) {
+      core_default.prototype.state = function(initial = {}, options = {}) {
         var _a;
         if (options.global) {
           if (!options.name) throw new Error("Global state must have a name.");
@@ -274,7 +279,7 @@
         this.bind(proxy);
         return proxy;
       };
-      AnJS.prototype.bind = function(state, context = document) {
+      core_default.prototype.bind = function(state, context = document) {
         context.querySelectorAll("[data-bind], [data-bind-this], [data-bind-attr]").forEach((el) => {
           var _a;
           if (el.dataset.bound) return;
@@ -296,7 +301,7 @@
         });
         this.autoEvents(state, context);
       };
-      AnJS.prototype.autoEvents = function(state, context = document) {
+      core_default.prototype.autoEvents = function(state, context = document) {
         context.querySelectorAll("[data-on]").forEach((el) => {
           var _a;
           const [event, method] = el.getAttribute("data-on")?.split(":");
@@ -324,7 +329,7 @@
           }
         });
       };
-      AnJS.prototype.unbind = function(state) {
+      core_default.prototype.unbind = function(state) {
         Object.values(localBindings.get(state)).forEach(
           (bindings2) => (
             // Remove each event listener
@@ -402,7 +407,7 @@
           if (el.dataset.__mounted) return;
           el.dataset.__mounted = "true";
           const props = Object.fromEntries([...el.attributes].map((attr) => [attr.name, attr.value]));
-          const componentState = AnJS.prototype.state({ ...state(), ...props });
+          const componentState = core_default.prototype.state({ ...state(), ...props });
           const rendered = this.render(template({ state: componentState, props }), componentState);
           el.replaceWith(rendered);
           $(rendered).bind(componentState);
@@ -444,10 +449,10 @@
           });
         }
       };
-      AnJS.prototype.component = function(name, template, stateOrHandlers, handlers) {
+      core_default.prototype.component = function(name, template, stateOrHandlers, handlers) {
         components.register(name, template, stateOrHandlers, handlers);
       };
-      AnJS.prototype.render = components.render;
+      core_default.prototype.render = components.render;
       startObserver();
       component_default = components;
     }
@@ -508,7 +513,7 @@
   var init_request = __esm({
     "src/request.js"() {
       init_core();
-      AnJS.prototype.request = function(url, method = "GET", data = null, options = {}) {
+      core_default.prototype.request = function(url, method = "GET", data = null, options = {}) {
         return request(url, method, data, options);
       };
       http = {
@@ -533,7 +538,7 @@
   var init_animate = __esm({
     "src/animate.js"() {
       init_core();
-      Object.assign(AnJS.prototype, {
+      Object.assign(core_default.prototype, {
         /**
          * Animate elements with CSS transitions.
          * 
@@ -586,7 +591,7 @@
 
   // src/dom.js
   init_core();
-  Object.assign(AnJS.prototype, {
+  Object.assign(core_default.prototype, {
     /**
      * Get or set text or HTML content
      * 
@@ -753,7 +758,7 @@
 
   // src/attributes.js
   init_core();
-  Object.assign(AnJS.prototype, {
+  Object.assign(core_default.prototype, {
     /**
      * Get or set an attribute on selected elements
      * 
@@ -797,7 +802,7 @@
   // src/events.js
   init_core();
   var eventStore = /* @__PURE__ */ new WeakMap();
-  Object.assign(AnJS.prototype, {
+  Object.assign(core_default.prototype, {
     /**
      * Attach an event listener (direct or delegated)
      * 
@@ -920,13 +925,13 @@
   ["append", "prepend", "before", "after"].forEach(
     (method) => (
       // Create alias method
-      AnJS.prototype[method] = function(content) {
+      core_default.prototype[method] = function(content) {
         return this.insert(content, method);
       }
     )
   );
   ["click", "change", "submit", "keydown", "keyup", "mouseover", "mouseout"].forEach((event) => {
-    AnJS.prototype[event] = function(callback) {
+    core_default.prototype[event] = function(callback) {
       return callback ? this.on(event, callback) : this.trigger(event);
     };
   });
@@ -978,8 +983,8 @@
       if (typeof func === "boolean") force = func;
       return Object.keys(name).forEach((key) => extend(key, name[key], force));
     }
-    if (!force && AnJS.prototype.hasOwnProperty(name)) return;
-    AnJS.prototype[name] = func;
+    if (!force && core_default.prototype.hasOwnProperty(name)) return;
+    core_default.prototype[name] = func;
   };
   var extend_default = { extend };
 
@@ -993,10 +998,10 @@
   if (false) globalThis.FEATURE_COMPONENTS = true;
   if (false) globalThis.FEATURE_ELEMENTS = true;
   function $2(selector) {
-    return new AnJS(selector);
+    return new core_default(selector);
   }
   ["on", "off", "trigger"].forEach((method) => {
-    $2[method] = (...args) => AnJS.prototype[method].apply($2(), args);
+    $2[method] = (...args) => core_default.prototype[method].apply($2(), args);
   });
   if (FEATURE_SELECTION) {
     Promise.resolve().then(() => (init_filtering(), filtering_exports)).then((mod) => Object.assign($2, mod));
@@ -1004,13 +1009,13 @@
   }
   if (true) Promise.resolve().then(() => (init_state(), state_exports)).then(() => {
     ["state", "global"].forEach((module) => {
-      $2[module] = (...args) => AnJS.prototype[module].apply($2(), args);
+      $2[module] = (...args) => core_default.prototype[module].apply($2(), args);
     });
   });
   if (true) {
     Promise.resolve().then(() => (init_component(), component_exports)).then((mod) => {
       ["component"].forEach((module) => {
-        $2[module] = (...args) => AnJS.prototype[module].apply($2(), args);
+        $2[module] = (...args) => core_default.prototype[module].apply($2(), args);
       });
       $2.define = (name, componentClass) => customElements.define(name, componentClass);
     });

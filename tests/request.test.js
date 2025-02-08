@@ -1,6 +1,6 @@
 // Dependencies
 import AnJS from '../src/core.js';
-import { $ } from '../src/index.js';
+import $ from '../src/index.js';
 import { request } from '../src/request.js';
 
 // Mock global fetch API

@@ -1,6 +1,6 @@
 {
   "name": "almostnojs",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "A minimalist, dependency-free JavaScript framework for DOM manipulation, event handling, animations, state management, and HTTP requests.",
   "keywords": [
     "javascript",
@@ -45,8 +45,32 @@
   "module": "./dist/npm/almostno.module.js",
   "exports": {
     "types": "./index.d.ts",
-    "import": "./dist/npm/almostno.module.js",
-    "require": "./dist/npm/almostno.cjs.js"
+    "core": {
+      "import": "./dist/esm/core.module.js",
+      "require": "./dist/cjs/core.cjs.js"
+    },
+    "extend": {
+      "import": "./dist/esm/extend.module.js",
+      "require": "./dist/cjs/extend.cjs.js"
+    },
+    "element": {
+      "import": "./dist/esm/element.module.js",
+      "require": "./dist/cjs/element.cjs.js"
+    },
+    "events": {
+      "import": "./dist/esm/events.module.js",
+      "require": "./dist/cjs/events.cjs.js"
+    },
+    "request": {
+      "import": "./dist/esm/request.module.js",
+      "require": "./dist/cjs/request.cjs.js"
+    },
+    "utilities": {
+      "import": "./dist/esm/utilities.module.js",
+      "require": "./dist/cjs/utilities.cjs.js"
+    },
+    "import": "./dist/esm/almostno.module.js",
+    "require": "./dist/cjs/almostno.cjs.js"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.26.7",

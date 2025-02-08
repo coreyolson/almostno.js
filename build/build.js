@@ -54,21 +54,127 @@ const VARIANTS = {
         sourcemap: true
     },
 
-    // ESM Module (Tree-Shakable, For NPM)
+    // Core Module (ESM and CJS)
+    coreESM: {
+        name: "Core (ESM)",
+        entry: './src/core.js',
+        outputNPM: './dist/esm/core.module.js', // Updated to esm/
+        format: "esm",
+        defines: {},
+        sourcemap: false
+    },
+    coreCJS: {
+        name: "Core (CJS)",
+        entry: './src/core.js',
+        outputNPM: './dist/cjs/core.cjs.js', // Updated to cjs/
+        format: "cjs",
+        defines: {},
+        sourcemap: false
+    },
+
+    // Extend Module (ESM and CJS)
+    extendESM: {
+        name: "Extend (ESM)",
+        entry: './src/extend.js',
+        outputNPM: './dist/esm/extend.module.js', // Updated to esm/
+        format: "esm",
+        defines: {},
+        sourcemap: false
+    },
+    extendCJS: {
+        name: "Extend (CJS)",
+        entry: './src/extend.js',
+        outputNPM: './dist/cjs/extend.cjs.js', // Updated to cjs/
+        format: "cjs",
+        defines: {},
+        sourcemap: false
+    },
+
+    // Element Module (ESM and CJS)
+    elementESM: {
+        name: "Element (ESM)",
+        entry: './src/element.js',
+        outputNPM: './dist/esm/element.module.js', // Updated to esm/
+        format: "esm",
+        defines: {},
+        sourcemap: false
+    },
+    elementCJS: {
+        name: "Element (CJS)",
+        entry: './src/element.js',
+        outputNPM: './dist/cjs/element.cjs.js', // Updated to cjs/
+        format: "cjs",
+        defines: {},
+        sourcemap: false
+    },
+
+    // Existing Full Library Builds
     esm: {
         name: "ESM",
         entry: './src/index.js',
-        outputNPM: './dist/npm/almostno.module.js',
+        outputNPM: './dist/esm/almostno.module.js',
         format: "esm",
         defines: {},
-        sourcemap: false 
+        sourcemap: false
     },
-
-    // CommonJS (For Node.js)
     cjs: {
         name: "CommonJS",
         entry: './src/index.js',
-        outputNPM: './dist/npm/almostno.cjs.js',
+        outputNPM: './dist/cjs/almostno.cjs.js',
+        format: "cjs",
+        defines: {},
+        sourcemap: false
+    },
+
+    // Event Bus Module (ESM and CJS)
+    eventsESM: {
+        name: "Events (ESM)",
+        entry: './src/events.js',
+        outputNPM: './dist/esm/events.module.js',
+        format: "esm",
+        defines: {},
+        sourcemap: false
+    },
+    eventsCJS: {
+        name: "Events (CJS)",
+        entry: './src/events.js',
+        outputNPM: './dist/cjs/events.cjs.js',
+        format: "cjs",
+        defines: {},
+        sourcemap: false
+    },
+
+    // HTTP Request Module (ESM and CJS)
+    requestESM: {
+        name: "Request (ESM)",
+        entry: './src/request.js',
+        outputNPM: './dist/esm/request.module.js',
+        format: "esm",
+        defines: {},
+        sourcemap: false
+    },
+    requestCJS: {
+        name: "Request (CJS)",
+        entry: './src/request.js',
+        outputNPM: './dist/cjs/request.cjs.js',
+        format: "cjs",
+        defines: {},
+        sourcemap: false
+    },
+
+    // Utilities Module (ESM and CJS)
+    utilitiesESM: {
+        name: "Utilities (ESM)",
+        entry: './src/utilities.js',
+        outputNPM: './dist/esm/utilities.module.js',
+        format: "esm",
+        defines: {},
+        sourcemap: false
+    },
+    utilitiesCJS: {
+        name: "Utilities (CJS)",
+        entry: './src/utilities.js',
+        outputNPM: './dist/cjs/utilities.cjs.js',
         format: "cjs",
         defines: {},
         sourcemap: false

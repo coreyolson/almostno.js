@@ -55,12 +55,10 @@ if (typeof window !== "undefined") window.$ = $;
 // Export module
 export default $;
 
-// Named export
-export { $ };
-
 /**
  * Feature Improvements:
  *
  * // TODO: Consider lifecycle hooks (onMount(), onDestroy()) for advanced use cases.
  * // TODO: Consider adding built-in routing for single-page applications.
+ * // TODO: Consider destroyState() to this.unbind(state); and localBindings.delete(state);
  */
