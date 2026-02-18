@@ -160,7 +160,7 @@ Build reactive web components with `AnJSElement`.
 import { AnJSElement, html, registerComponent } from 'almostnojs';
 
 class MyCounter extends AnJSElement {
-    setup() {
+    init() {
         this.state.count = 0;
     }
 
@@ -179,7 +179,55 @@ registerComponent('my-counter', MyCounter);
 <my-counter></my-counter>
 ```
 
-Features: reactive state proxy, batched microtask updates, computed properties, `observedAttributes` reflection, `setup()` and `destroy()` lifecycle hooks.
+Features: reactive state proxy, batched microtask updates, computed properties, `observedAttributes` reflection, `init()` / `updated()` / `destroy()` lifecycle hooks, auto-cleanup with `this.own()`, `updateComplete` promise, `repeat()` keyed lists.
+
+#### Keyed Lists with `repeat()`
+
+```js
+import { AnJSElement, html, repeat, registerComponent } from 'almostnojs';
+
+class TodoList extends AnJSElement {
+    init() {
+        this.state.items = [
+            { id: 1, text: 'Learn AnJS' },
+            { id: 2, text: 'Build something' },
+        ];
+    }
+
+    render() {
+        return html`<ul>${repeat(
+            this.state.items,
+            item => item.id,
+            item => html`<li>${item.text}</li>`
+        )}</ul>`;
+    }
+}
+
+registerComponent('todo-list', TodoList);
+```
+
+#### Auto-Cleanup
+
+```js
+class LiveWidget extends AnJSElement {
+    init() {
+        // Automatically unsubscribed when element disconnects
+        this.own($.listen('data:update', (data) => {
+            this.state.value = data;
+        }));
+    }
+    render() { return html`<span>${this.state.value}</span>`; }
+}
+```
+
+#### Awaiting Updates
+
+```js
+const el = document.querySelector('my-counter');
+el.state.count = 42;
+await el.updateComplete;
+// DOM is now updated
+```
 
 ### DOM Manipulation
 
@@ -260,6 +308,7 @@ $.get('/api/slow', { timeout: 3000 });
 |--------|-------------|
 | `AnJSElement` | Base class for reactive custom elements |
 | `registerComponent(name, cls)` | Register a custom element (idempotent) |
+| `repeat(items, keyFn, templateFn)` | Keyed list helper for efficient DOM reconciliation |
 
 #### `AnJSElement` Instance API
 
@@ -269,8 +318,12 @@ $.get('/api/slow', { timeout: 3000 });
 | `computed(name, deps, fn)` | Define a computed property |
 | `render()` | Return `html`\`...\` or a string — called on every update |
 | `update()` | Force a synchronous DOM update |
-| `setup()` | Lifecycle hook — called once after first render |
-| `destroy()` | Lifecycle hook — called on `disconnectedCallback` |
+| `own(disposerFn)` | Register a cleanup function — called automatically on disconnect |
+| `updateComplete` | Promise that resolves after the current render cycle |
+| `static updateStrategy` | `'microtask'` (default) or `'raf'` for frame-coalesced updates |
+| `init()` | Lifecycle hook — called once after first render |
+| `updated()` | Lifecycle hook — called after every render |
+| `destroy()` | Lifecycle hook — called on disconnect before auto-cleanup |
 
 ### Core
 

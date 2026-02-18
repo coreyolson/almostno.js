@@ -1,4 +1,4 @@
-/* AlmostNo.js v1.2.1 Events (ESM) */
+/* AlmostNo.js v1.3.0 Events (ESM) */
 
 // src/core.js
 var globalScope = typeof window !== "undefined" ? window : global;
@@ -150,10 +150,12 @@ var bus = {
    * 
    * @param {string} event - The event name
    * @param {Function} handler - The callback function
+   * @returns {Function} - Unsubscribe function that removes this listener
    */
   listen(event, handler) {
     if (!eventBus[event]) eventBus[event] = [];
     eventBus[event].push(handler);
+    return () => bus.forget(event, handler);
   },
   /**
    * Remove a global event listener

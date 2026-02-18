@@ -1,4 +1,4 @@
-/* AlmostNo.js v1.2.1 Extended */
+/* AlmostNo.js v1.3.0 Extended */
 (() => {
   var __defProp = Object.defineProperty;
   var __getOwnPropNames = Object.getOwnPropertyNames;
@@ -628,10 +628,12 @@
      * 
      * @param {string} event - The event name
      * @param {Function} handler - The callback function
+     * @returns {Function} - Unsubscribe function that removes this listener
      */
     listen(event, handler) {
       if (!eventBus[event]) eventBus[event] = [];
       eventBus[event].push(handler);
+      return () => bus.forget(event, handler);
     },
     /**
      * Remove a global event listener

@@ -1,4 +1,4 @@
-/* AlmostNo.js v1.2.1 Element (CJS) */
+/* AlmostNo.js v1.3.0 Element (CJS) */
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
@@ -23,6 +23,7 @@ __export(element_exports, {
   AnJSElement: () => AnJSElement,
   html: () => html,
   registerComponent: () => registerComponent,
+  repeat: () => repeat,
   unsafeHTML: () => unsafeHTML
 });
 module.exports = __toCommonJS(element_exports);
@@ -219,6 +220,7 @@ function commitValues(instance, newValues) {
 function commitArray(part, items) {
   if (!part._items) {
     part._items = [];
+    part._keys = [];
     if (!part._container) {
       part._container = document.createElement("span");
       part._container.style.display = "contents";
@@ -227,6 +229,53 @@ function commitArray(part, items) {
   }
   const container = part._container;
   const existing = part._items;
+  const oldKeys = part._keys;
+  const isKeyed = items.length > 0 && items[0] && items[0]._key !== void 0;
+  if (isKeyed) {
+    const oldMap = /* @__PURE__ */ new Map();
+    for (let i = 0; i < oldKeys.length; i++) {
+      oldMap.set(oldKeys[i], existing[i]);
+    }
+    const newSlots = [];
+    const newKeys = [];
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      const key = item._key;
+      newKeys.push(key);
+      const slot = oldMap.get(key);
+      if (slot) {
+        if (item instanceof TemplateResult) {
+          render(item, slot);
+        } else {
+          slot.textContent = String(item ?? "");
+        }
+        newSlots.push(slot);
+        oldMap.delete(key);
+      } else {
+        const newSlot = document.createElement("span");
+        newSlot.style.display = "contents";
+        if (item instanceof TemplateResult) {
+          render(item, newSlot);
+        } else {
+          newSlot.textContent = String(item ?? "");
+        }
+        newSlots.push(newSlot);
+      }
+    }
+    for (const orphan of oldMap.values()) {
+      orphan.remove();
+    }
+    for (let i = 0; i < newSlots.length; i++) {
+      const slot = newSlots[i];
+      const current = container.childNodes[i];
+      if (current !== slot) {
+        container.insertBefore(slot, current || null);
+      }
+    }
+    part._items = newSlots;
+    part._keys = newKeys;
+    return;
+  }
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
     if (i < existing.length) {
@@ -317,14 +366,37 @@ function syncAttributes(oldEl, newEl) {
   }
 }
 
+// src/repeat.js
+function repeat(items, keyFn, templateFn) {
+  const results = [];
+  let index = 0;
+  for (const item of items) {
+    const result = templateFn(item, index);
+    if (result && typeof result === "object") {
+      result._key = keyFn(item, index);
+    }
+    results.push(result);
+    index++;
+  }
+  return results;
+}
+
 // src/element.js
 var registerComponent = (name, ComponentClass) => {
   if (!customElements.get(name)) customElements.define(name, ComponentClass);
 };
-var AnJSElement = class extends HTMLElement {
+var AnJSElement = class _AnJSElement extends HTMLElement {
   // Define which attributes to observe (subclasses should override this)
   static get observedAttributes() {
     return [];
+  }
+  /**
+   * Update scheduling strategy — override in subclasses
+   *
+   * @returns {string} 'microtask' (default, fastest) or 'raf' (frame-coalesced, for streaming data)
+   */
+  static get updateStrategy() {
+    return "microtask";
   }
   // Constructor initializes state
   constructor() {
@@ -332,6 +404,10 @@ var AnJSElement = class extends HTMLElement {
     this._updatePending = false;
     this._initialized = false;
     this._computedDefs = /* @__PURE__ */ new Map();
+    this._disposers = [];
+    const useRaf = this.constructor.updateStrategy === "raf";
+    this._schedule = useRaf ? (fn) => requestAnimationFrame(fn) : (fn) => queueMicrotask(fn);
+    this._setupUpdatePromise();
     this.state = new Proxy($.state({}), {
       // Intercept property changes
       set: (target, prop, value) => {
@@ -339,7 +415,7 @@ var AnJSElement = class extends HTMLElement {
         this._recompute(prop);
         if (!this._updatePending) {
           this._updatePending = true;
-          queueMicrotask(() => {
+          this._schedule(() => {
             if (this._updatePending) {
               this._updatePending = false;
               this.update();
@@ -360,6 +436,9 @@ var AnJSElement = class extends HTMLElement {
   // Lifecycle: Called when element is removed from the DOM
   disconnectedCallback() {
     this._updatePending = false;
+    this.destroy();
+    for (const dispose of this._disposers) dispose();
+    this._disposers.length = 0;
   }
   // Lifecycle: Called when an observed attribute changes
   attributeChangedCallback(name, oldValue, newValue) {
@@ -399,9 +478,29 @@ var AnJSElement = class extends HTMLElement {
       }
     }
   }
+  /**
+   * Register a disposer function for automatic cleanup on disconnect
+   *
+   * @param {Function} disposer - Cleanup function (e.g., returned by $.listen or state.onChange)
+   * @returns {Function} - The same disposer, for convenience
+   */
+  own(disposer) {
+    this._disposers.push(disposer);
+    return disposer;
+  }
+  /**
+   * Create a fresh updateComplete promise (internal)
+   * @private
+   */
+  _setupUpdatePromise() {
+    this.updateComplete = new Promise((resolve) => {
+      this._resolveUpdate = resolve;
+    });
+  }
   // Update DOM based on the current state
   update() {
     this._updatePending = false;
+    const isFirst = !this._initialized;
     const result = this.render();
     if (result instanceof TemplateResult) {
       render(result, this);
@@ -412,6 +511,34 @@ var AnJSElement = class extends HTMLElement {
     }
     this._initialized = true;
     $.bind(this.state, this);
+    if (isFirst) this.init();
+    this.updated();
+    if (this._resolveUpdate) this._resolveUpdate();
+    this._setupUpdatePromise();
+  }
+  /**
+   * Lifecycle hook — called once after the first render completes.
+   * Override in subclasses for one-time setup that needs the DOM.
+   */
+  init() {
+    if (this.setup !== _AnJSElement.prototype.setup) this.setup();
+  }
+  /**
+   * @deprecated Use init() instead. Retained for backward compatibility.
+   */
+  setup() {
+  }
+  /**
+   * Lifecycle hook — called after every render completes.
+   * Override in subclasses for post-render side effects.
+   */
+  updated() {
+  }
+  /**
+   * Lifecycle hook — called when element is removed from the DOM,
+   * before auto-cleanup runs. Override for custom teardown.
+   */
+  destroy() {
   }
   // Default render method (override in subclasses)
   render() {

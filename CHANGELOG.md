@@ -2,6 +2,22 @@
 
 All notable changes to AlmostNo.js will be documented in this file.
 
+## [1.3.0] — 2025-07-18
+
+### Added
+
+- **Lifecycle Hooks** — `init()` (called once after first render), `updated()` (called after every render), `destroy()` (called on disconnect before cleanup). Replaces the previous `setup()` hook with a richer three-stage lifecycle.
+- **Auto-Cleanup (`this.own()`)** — Register disposer functions that are automatically called when the element disconnects. Integrates with `$.listen()` unsubscribe for zero-leak event patterns.
+- **`updateComplete` Promise** — Resolves after each render cycle completes. Enables awaiting DOM updates: `el.state.x = 1; await el.updateComplete;`.
+- **Render Throttle Strategy** — `static get updateStrategy()` returns `'microtask'` (default) or `'raf'` for frame-coalesced updates. Components can opt into requestAnimationFrame scheduling for high-frequency state changes.
+- **`repeat()` Keyed List Helper** — `repeat(items, keyFn, templateFn)` produces keyed `TemplateResult` arrays for efficient DOM reconciliation. Reuses and reorders existing DOM nodes by key instead of recreating them.
+- **Keyed Array Reconciliation** — `commitArray()` in the template engine now detects keyed items and performs map-based DOM reuse, orphan removal, and `insertBefore` reordering.
+
+### Changed
+
+- **`$.listen()` returns unsubscribe** — `$.listen(event, handler)` now returns `() => void` that removes the specific handler. Existing code that ignores the return value is unaffected.
+- **`setup()` → `init()`** — The `setup()` lifecycle hook is renamed to `init()` for clarity. `setup()` still works but is no longer documented.
+
 ## [1.2.0] — 2025-06-20
 
 ### Added

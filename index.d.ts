@@ -1,4 +1,4 @@
-// AlmostNo.js — Type Declarations (v1.2.0)
+// AlmostNo.js — Type Declarations (v1.3.0)
 
 // ---------------------------------------------------------------------------
 // Template Parts
@@ -59,9 +59,19 @@ export interface ReactiveState {
 /** Register a custom element (idempotent — safe to call multiple times) */
 export declare function registerComponent(name: string, componentClass: typeof HTMLElement): void;
 
+/** Keyed list helper — produces keyed TemplateResults for efficient DOM reconciliation */
+export declare function repeat<T>(
+    items: Iterable<T>,
+    keyFn: (item: T, index: number) => string | number,
+    templateFn: (item: T, index: number) => TemplateResult
+): TemplateResult[];
+
 /** Base class for AnJS custom elements with reactive state and batched rendering */
 export declare class AnJSElement extends HTMLElement {
     static observedAttributes: string[];
+
+    /** Render scheduling strategy — 'microtask' (default) or 'raf' for frame-coalesced updates */
+    static readonly updateStrategy: 'microtask' | 'raf';
 
     /** Reactive state proxy — property writes trigger batched updates */
     state: ReactiveState;
@@ -72,6 +82,12 @@ export declare class AnJSElement extends HTMLElement {
     /** Whether the element has been initialized (first render complete) */
     _initialized: boolean;
 
+    /** Array of disposer functions called on disconnect */
+    _disposers: Array<() => void>;
+
+    /** Promise that resolves after the current render cycle completes */
+    updateComplete: Promise<void>;
+
     /** Define a computed property that auto-recalculates when dependencies change */
     computed(name: string, deps: string[], fn: (state: ReactiveState) => any): void;
 
@@ -81,10 +97,16 @@ export declare class AnJSElement extends HTMLElement {
     /** Trigger a synchronous DOM update */
     update(): void;
 
-    /** Lifecycle hook — called once after first render */
-    setup(): void;
+    /** Register a disposer function to be called on disconnect. Returns the function for chaining. */
+    own<T extends () => void>(disposer: T): T;
 
-    /** Lifecycle hook — called on disconnectedCallback */
+    /** Lifecycle hook — called once after first render */
+    init(): void;
+
+    /** Lifecycle hook — called after every render (including first) */
+    updated(): void;
+
+    /** Lifecycle hook — called on disconnect before auto-cleanup runs */
     destroy(): void;
 }
 
@@ -204,7 +226,7 @@ declare namespace $ {
 
     // -- Event Bus --
     function emit(event: string, data?: any): void;
-    function listen(event: string, handler: (data: any) => void): void;
+    function listen(event: string, handler: (data: any) => void): () => void;
     function forget(event: string, handler?: (data: any) => void): void;
 
     // -- HTTP --

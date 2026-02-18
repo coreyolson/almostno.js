@@ -56,7 +56,7 @@ if (typeof window !== "undefined") window.$ = $;
 export default $;
 
 // Export element system
-export { AnJSElement, html, unsafeHTML, registerComponent } from './element.js';
+export { AnJSElement, html, unsafeHTML, repeat, registerComponent } from './element.js';
 
 // Export template and morph utilities
 export { TemplateResult, UnsafeHTML, render as renderTemplate, clearTemplate } from './template.js';

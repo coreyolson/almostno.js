@@ -390,7 +390,9 @@ function commitValues(instance, newValues) {
 }
 
 /**
- * Handle array values — render each item, add/remove as needed
+ * Handle array values — render each item, add/remove as needed.
+ * When items carry `_key` (from repeat()), uses key-based reconciliation
+ * to reuse and reorder existing DOM instead of recreating it.
  *
  * @param {Object} part - The node part
  * @param {Array} items - Array of values (strings or TemplateResults)
@@ -401,6 +403,7 @@ function commitArray(part, items) {
     if (!part._items) {
 
         part._items = [];
+        part._keys = [];
 
         // Replace text node with a container
         if (!part._container) {
@@ -412,8 +415,84 @@ function commitArray(part, items) {
 
     const container = part._container;
     const existing = part._items;
+    const oldKeys = part._keys;
 
-    // Update existing items and append new ones
+    // Check if array uses keyed items (from repeat())
+    const isKeyed = items.length > 0 && items[0] && items[0]._key !== undefined;
+
+    // Keyed reconciliation — reuse DOM by key identity
+    if (isKeyed) {
+
+        // Build lookup from old keys to existing DOM slots
+        const oldMap = new Map();
+        for (let i = 0; i < oldKeys.length; i++) {
+
+            oldMap.set(oldKeys[i], existing[i]);
+        }
+
+        // Build new ordered list
+        const newSlots = [];
+        const newKeys = [];
+
+        for (let i = 0; i < items.length; i++) {
+
+            const item = items[i];
+            const key = item._key;
+            newKeys.push(key);
+
+            // Reuse existing slot if key matches
+            const slot = oldMap.get(key);
+            if (slot) {
+
+                // Update content in reused slot
+                if (item instanceof TemplateResult) {
+                    render(item, slot);
+                } else {
+                    slot.textContent = String(item ?? '');
+                }
+                newSlots.push(slot);
+                oldMap.delete(key);
+            } else {
+
+                // Create new slot for new key
+                const newSlot = document.createElement('span');
+                newSlot.style.display = 'contents';
+
+                if (item instanceof TemplateResult) {
+                    render(item, newSlot);
+                } else {
+                    newSlot.textContent = String(item ?? '');
+                }
+                newSlots.push(newSlot);
+            }
+        }
+
+        // Remove orphaned slots (keys no longer present)
+        for (const orphan of oldMap.values()) {
+
+            orphan.remove();
+        }
+
+        // Reorder DOM to match new key order
+        for (let i = 0; i < newSlots.length; i++) {
+
+            const slot = newSlots[i];
+            const current = container.childNodes[i];
+
+            // Append or reposition as needed
+            if (current !== slot) {
+
+                container.insertBefore(slot, current || null);
+            }
+        }
+
+        // Store updated references
+        part._items = newSlots;
+        part._keys = newKeys;
+        return;
+    }
+
+    // Un-keyed fallback — positional update (original behavior)
     for (let i = 0; i < items.length; i++) {
 
         const item = items[i];

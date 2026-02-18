@@ -182,6 +182,7 @@ export const bus = {
      * 
      * @param {string} event - The event name
      * @param {Function} handler - The callback function
+     * @returns {Function} - Unsubscribe function that removes this listener
      */
     listen(event, handler) {
 
@@ -190,6 +191,9 @@ export const bus = {
 
         // Add the handler to the event
         eventBus[event].push(handler);
+
+        // Return unsubscribe function
+        return () => bus.forget(event, handler);
     },
 
     /**
