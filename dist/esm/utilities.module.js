@@ -1,4 +1,4 @@
-/* AlmostNo.js v1.1.3 Utilities (ESM) */
+/* AlmostNo.js v1.2.0 Utilities (ESM) */
 
 // src/utilities.js
 var trim = (string) => string.trim();

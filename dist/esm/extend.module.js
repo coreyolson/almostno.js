@@ -1,4 +1,4 @@
-/* AlmostNo.js v1.1.3 Extend (ESM) */
+/* AlmostNo.js v1.2.0 Extend (ESM) */
 
 // src/core.js
 var globalScope = typeof window !== "undefined" ? window : global;

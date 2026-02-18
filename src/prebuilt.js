@@ -95,7 +95,7 @@ if (FEATURE_COMPONENTS) {
     });
 }
 
-// Dynamically import "Element" module
+// Dynamically import "Element" module (includes template parts + morph)
 if (FEATURE_ELEMENTS) import('./element.js');
 
 // Dynamically import "HTTP" module

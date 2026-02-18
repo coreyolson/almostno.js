@@ -97,12 +97,14 @@ AnJS.prototype.hasGlobal = function (name) {
  * 
  * @param {Object} initial - The initial state values.
  * @param {Object} [options] - Options for state behavior.
- * @returns {Proxy} - The reactive proxy object.
+ * @returns {Proxy} - The reactive proxy object with onChange, onAny, patch.
  */
 AnJS.prototype.state = function (initial = {}, options = {}) {
 
     // Handle global state registration
-    if (options.global) {
+    const isGlobal = !!options.global;
+
+    if (isGlobal) {
 
         // Ensure a valid name is provided
         if (!options.name) throw new Error("Global state must have a name.");
@@ -111,11 +113,59 @@ AnJS.prototype.state = function (initial = {}, options = {}) {
         initial = globalStates[options.name] ??= initial;
     }
 
+    // Per-property change listeners — Map<string, Set<Function>>
+    const listeners = new Map();
+
+    // Batch queue — when non-null, defers notifications until batch ends
+    let batchQueue = null;
+
+    // Fire listeners for a specific property (and wildcards)
+    function notify(prop, value) {
+
+        // Fire property-specific listeners
+        const handlers = listeners.get(prop);
+        if (handlers) handlers.forEach(fn => fn(value, prop));
+
+        // Fire wildcard listeners
+        const wildcards = listeners.get('*');
+        if (wildcards) wildcards.forEach(fn => fn(value, prop));
+    }
+
     // Create proxy for reactive updates
     const proxy = new Proxy(initial, {
 
-        // Retrieve state property
-        get: (target, prop) => target[prop],
+        // Retrieve state property — also exposes onChange, onAny, patch as methods
+        get: (target, prop) => {
+
+            // Expose onChange as a non-enumerable method
+            if (prop === 'onChange') return (path, handler) => {
+                if (!listeners.has(path)) listeners.set(path, new Set());
+                listeners.get(path).add(handler);
+                return () => listeners.get(path)?.delete(handler);
+            };
+
+            // Expose onAny as convenience for wildcard
+            if (prop === 'onAny') return (handler) => {
+                if (!listeners.has('*')) listeners.set('*', new Set());
+                listeners.get('*').add(handler);
+                return () => listeners.get('*')?.delete(handler);
+            };
+
+            // Expose patch for batch updates
+            if (prop === 'patch') return (changes) => {
+                batchQueue = new Set();
+                for (const [key, val] of Object.entries(changes)) {
+                    proxy[key] = val;
+                }
+                const changed = batchQueue;
+                batchQueue = null;
+                for (const key of changed) {
+                    notify(key, target[key]);
+                }
+            };
+
+            return target[prop];
+        },
 
         // Update state property & trigger UI updates
         set: (target, prop, value) => {
@@ -123,21 +173,23 @@ AnJS.prototype.state = function (initial = {}, options = {}) {
             // Assign new value
             target[prop] = value;
 
-            // Update elements bound to global properties
-            Object.keys(bindings).forEach(bindKey => {
+            // Only scan global bindings for global state (performance optimization)
+            if (isGlobal) {
+                Object.keys(bindings).forEach(bindKey => {
 
-                // Handle nested properties (e.g., `cards.title`)
-                let [root, ...rest] = bindKey.split(".");
+                    // Handle nested properties (e.g., `cards.title`)
+                    let [root, ...rest] = bindKey.split(".");
 
-                // Skip if the root object doesn't exist
-                if (!bindings[bindKey]) return;
+                    // Skip if the root object doesn't exist
+                    if (!bindings[bindKey]) return;
 
-                // Update nested properties
-                let nestedValue = rest.reduce((obj, key) => obj?.[key], globalStates[root]);
+                    // Update nested properties
+                    let nestedValue = rest.reduce((obj, key) => obj?.[key], globalStates[root]);
 
-                // Update elements bound with `data-bind`
-                bindings[bindKey].forEach(el => el.textContent = nestedValue ?? "");
-            });
+                    // Update elements bound with `data-bind`
+                    bindings[bindKey].forEach(el => el.textContent = nestedValue ?? "");
+                });
+            }
 
             // Update elements bound with `data-bind`
             bindings[prop]?.forEach(el => el.textContent = value ?? "");
@@ -157,6 +209,13 @@ AnJS.prototype.state = function (initial = {}, options = {}) {
                     // Set attribute value
                     : boolAttrs.has(attr.toLowerCase()) ? el.toggleAttribute(attr, !!value) : el.setAttribute(attr, value);
             });
+
+            // Fire onChange listeners (or queue if batching)
+            if (batchQueue) {
+                batchQueue.add(prop);
+            } else {
+                notify(prop, value);
+            }
 
             return true;
         }

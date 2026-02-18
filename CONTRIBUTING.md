@@ -39,20 +39,31 @@ Keep files **small and modular**. The directory structure is as follows:
 
 ```plaintext
 /src
- ├── core.js       # Core framework logic
- ├── dom.js        # DOM manipulation utilities
- ├── state.js      # State management
- ├── events.js     # Event handling system
- ├── http.js       # AJAX & Fetch utilities
- ├── components.js # Component system
- ├── index.js      # Main entry point
+ ├── alias.js        # Event and insertion aliases (.append, .click, etc.)
+ ├── animate.js      # CSS-based animations (.animate, .fade)
+ ├── attributes.js   # Attribute helpers (.attr, .id, .removeAttr, .serialize)
+ ├── component.js    # Server-rendered component system
+ ├── core.js         # Core selector & iteration (.each, .get, .clone)
+ ├── dom.js          # DOM manipulation (.text, .html, .css, .class, etc.)
+ ├── element.js      # AnJSElement custom element base class
+ ├── events.js       # Event handling (.on, .off, .delegate, event bus)
+ ├── extend.js       # $.extend() for adding custom methods
+ ├── filtering.js    # .filter, .find, .first, .last, .even, .odd
+ ├── index.js        # Main entry point — $ factory + re-exports
+ ├── morph.js        # DOM morphing — reconcile live DOM vs. new HTML
+ ├── prebuilt.js     # Browser bundle composition (Core/Extended/Full)
+ ├── request.js      # HTTP request wrappers ($.get, $.post, etc.)
+ ├── state.js        # Reactive state management (proxy-based)
+ ├── template.js     # Tagged template rendering (html``, render, clearTemplate)
+ ├── traversal.js    # DOM traversal (.next, .prev, .parent, .closest)
+ └── utilities.js    # Utility helpers (debounce, throttle, type checks)
 /tests
- ├── state.test.js # Unit tests for state management
- ├── dom.test.js   # Unit tests for DOM utilities
+ ├── *.test.js       # One test file per source module (18 total)
+/build
+ ├── build.js        # esbuild + Babel build script
+ ├── jest.js         # Jest setup file
 /docs
- ├── CODESTYLE.md  # Code style guide
- ├── CONTRIBUTING.md
- ├── README.md
+ ├── *.html          # Live example pages
 ```
 
 ---
@@ -122,7 +133,7 @@ Then, go to GitHub and open a **Pull Request (PR)**.
 ## 5. Pull Request (PR) Guidelines
 
 - **Ensure all tests pass (`npm run test`)**.
-- **Follow the coding style (`npm run lint`)**.
+- **Follow the coding style (every line commented)**.
 - **Explain your changes in the PR description**.
 - **Keep PRs focused on one logical change**.
 - **Do not include unrelated files or changes**.

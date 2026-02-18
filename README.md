@@ -5,25 +5,25 @@
 ![Minified + Gzip](https://img.shields.io/bundlephobia/minzip/almostnojs)
 ![Flexible & Easy to Learn](https://img.shields.io/badge/flexible-Easy%20to%20Learn-gold)
 
-AlmostNo.js is a lightweight and highly flexible JavaScript library perfect for prototyping small projects designed for DOM manipulation, event handling, animations, and state management. It follows a minimalist approach, making it a fast, modern alternative with a familiar API.
-
-AlmostNo.js is a **lightweight**, **flexible** JavaScript library built for modern DOM manipulation, event handling, animations, **persistent state**, reusable **components**, and **server-side rendering (SSR)**. It follows a minimalist approach, making it a fast, modern alternative with a familiar API.
+AlmostNo.js is a **lightweight**, **zero-dependency** JavaScript framework featuring tagged template rendering, DOM morphing, custom elements, reactive state management, chainable DOM manipulation, event handling, animations, and HTTP requests.
 
 ## Features
 
-- **Tiny & Fast** – Small file size with no dependencies.
-- **Chainable API** – Familiar $().method() syntax for clean, readable code.
+- **Tagged Template Rendering** – Lit-style `html` tagged templates with surgical DOM updates.
+- **DOM Morphing** – Reconcile live DOM against new HTML without destroying state.
+- **Custom Elements** – Reactive `AnJSElement` base class with batched updates and computed properties.
+- **Tiny & Fast** – 5 KB core, 6 KB extended, 12 KB full (minified + gzipped). Zero dependencies.
+- **Chainable API** – Familiar `$().method()` syntax for clean, readable code.
 - **DOM Manipulation** – Select, traverse, and modify elements effortlessly.
-- **Events** – Attach, delegate, and trigger events easily.
-- **Animations** – Simple CSS-based animations.
-- **State Management** – Lightweight state bindings.
-- **SSR Components** – Define and register server-side components.
-- **Client-side Components** – Create reusable components with ease.
-- **Event Bus** – Cross-component communication with an event-based system.
-- **Easier Fetch API** – Wrappers for HTTP requests & timeout handling.
-- **Utility Functions** – Small but useful built-in helpers.
+- **Events & Event Bus** – Attach, delegate, trigger events; cross-component communication.
+- **Reactive State** – Proxy-based state with `onChange`, `onAny`, `patch`, and DOM bindings.
+- **Components** – SSR-compatible server/client components with auto-mounting.
+- **HTTP Requests** – Fetch wrappers with timeout handling and abort controllers.
+- **Animations** – Simple CSS-based transitions.
+- **Utilities** – Debounce, throttle, type checks, JSON parsing, and more.
 
 ## Examples
+
 See AlmostNo.js [Live Examples](https://coreyolson.github.io/almostno.js/) in action.
 
 - [Animations](docs/animate.html)
@@ -31,329 +31,365 @@ See AlmostNo.js [Live Examples](https://coreyolson.github.io/almostno.js/) in ac
 - [Components](docs/components.html)
 - [Core Features](docs/core.html)
 - [DOM Manipulation](docs/dom.html)
-- [Elements](docs/elements.html) - Requires Server-Side Rendering
+- [Elements](docs/elements.html)
 - [Events](docs/events.html)
 - [Filtering & Traversal](docs/filtering.html)
 - [HTTP Requests](docs/request.html)
 - [State Management](docs/state.html)
 - [Utilities](docs/utilities.html)
 
-Explore more at the [Examples Index](docs/index.html).
+## Browser Support
 
-## **Browser Support**
-AlmostNo.js is built for **modern browsers** and targets **ES2020**. It works on Chrome, Firefox, Edge, Safari, and Opera. If you're still worried about Internet Explorer... 🤔 No polyfills, no regrets.
+AlmostNo.js targets **ES2020** and works on all modern browsers (Chrome, Firefox, Edge, Safari, Opera).
 
 ## Installation
 
-AlmostNo.js can be installed via NPM, included via a CDN, or self-hosted.
-
 ### NPM
+
 ```sh
 npm install almostnojs
 ```
 
+```js
+import $, { html, render, morph, AnJSElement, registerComponent } from 'almostnojs';
+```
+
+### CDN
+
+```html
+<!-- jsDelivr -->
+<script src="https://cdn.jsdelivr.net/npm/almostnojs@latest/dist/cdn/almostno.full.js"></script>
+
+<!-- UNPKG -->
+<script src="https://unpkg.com/almostnojs@latest/dist/cdn/almostno.full.js"></script>
+```
+
 ### Self-hosting
-Download the latest release from the `dist/` directory and include it manually:
+
+Download the latest release from `dist/browser/` and include it directly:
+
 ```html
 <script src="./almostno.full.js"></script>
 ```
 
 ## Choosing the Right Version
 
-AlmostNo.js is available in three main variants, as well as an NPM package (with tree-shaking) so you can perfectly right-size the features to best fit for your project. The prebuilt versions "Core", "Extended" and "Full" are shown by features below.
+Three prebuilt bundles are available, plus NPM with tree-shaking.
 
 ### Feature Comparison
 
-| Feature                          | Core  | Extended | Full  | NPM  |
-|----------------------------------|-------|----------|-------|------|
-| **DOM Manipulation**             | ✅    | ✅       | ✅    | ✅   |
-| **Events**                       | ✅    | ✅       | ✅    | ✅   |
-| **Attributes**                   | ✅    | ✅       | ✅    | ✅   |
-| **HTTP Requests**                | ✅    | ✅       | ✅    | ✅   |
-| **Animations**                   | ❌    | ✅       | ✅    | ✅   |
-| **Filtering & Traversal** | ❌    | ✅       | ✅    | ✅   |
-| **State Management**             | ❌    | ❌       | ✅    | ✅   |
-| **Components**                   | ❌    | ❌       | ✅    | ✅   |
-| **SSR Elements**                 | ❌    | ❌       | ❌    | ✅   |
+| Feature                    | Core | Extended | Full | NPM |
+|----------------------------|------|----------|------|-----|
+| **DOM Manipulation**       | ✅   | ✅       | ✅   | ✅  |
+| **Events & Event Bus**     | ✅   | ✅       | ✅   | ✅  |
+| **Attributes**             | ✅   | ✅       | ✅   | ✅  |
+| **HTTP Requests**          | ✅   | ✅       | ✅   | ✅  |
+| **Animations**             | ❌   | ✅       | ✅   | ✅  |
+| **Filtering & Traversal**  | ❌   | ✅       | ✅   | ✅  |
+| **State Management**       | ❌   | ❌       | ✅   | ✅  |
+| **Components**             | ❌   | ❌       | ✅   | ✅  |
+| **Template Parts**         | ❌   | ❌       | ❌   | ✅  |
+| **DOM Morphing**           | ❌   | ❌       | ❌   | ✅  |
+| **Custom Elements**        | ❌   | ❌       | ❌   | ✅  |
 
----
+### Bundle Sizes (minified + gzipped)
 
-### File Size & Distribution Paths
+| Version      | Size    | Path                                  |
+|-------------|---------|---------------------------------------|
+| **Core**    | ~5 KB   | `dist/browser/almostno.js`            |
+| **Extended**| ~6 KB   | `dist/browser/almostno.extended.js`   |
+| **Full**    | ~12 KB  | `dist/browser/almostno.full.js`       |
 
-| Version      | Minified + Gzipped | File Path |
-|-------------|--------------------|-----------|
-| **Core**    | ![Core](https://img.shields.io/badge/size-2.5%20KB-blue) | `/dist/browser/almostno.js` |
-| **Extended** | ![Extended](https://img.shields.io/badge/size-2.9%20KB-blue) | `/dist/browser/almostno.extended.js` |
-| **Full**    | ![Full](https://img.shields.io/badge/size-4.7%20KB-blue) | `/dist/browser/almostno.full.js` |
+## Quick Start
 
+### Template Parts (Tagged Templates)
 
-### Which Version Should I Use?
+Render reactive templates with surgical DOM updates — only changed values are patched.
 
-- **Use `Core`** for the **lightest build** with DOM, events, attributes, and utilities.
-- **Use `Extended`** if you need **filtering, traversal, and animations** for a richer UI.
-- **Use `Full`** if you need **state management, components, and reactivity**.
-- **Use `NPM`** if you want **everything with tree-shaking support**.
+```js
+import { html, render } from 'almostnojs';
 
-### How to Include AlmostNo.js
+const app = document.getElementById('app');
 
-#### **CDN (For Browser Use)**
-Include one of the following in your HTML:
+function view(name) {
+    render(html`<h1>Hello, ${name}!</h1>`, app);
+}
+
+view('World');  // First render: creates DOM
+view('AnJS');   // Update: patches only the text node
+```
+
+#### Attributes
+
+```js
+render(html`<div class="card ${active ? 'active' : ''}">
+    <button disabled=${!ready}>Submit</button>
+</div>`, container);
+```
+
+#### Lists
+
+```js
+const items = ['Apple', 'Banana', 'Cherry'];
+render(html`<ul>${items.map(i => html`<li>${i}</li>`)}</ul>`, container);
+```
+
+#### Unsafe HTML
+
+```js
+import { html, unsafeHTML, render } from 'almostnojs';
+
+render(html`<div>${unsafeHTML('<em>trusted markup</em>')}</div>`, container);
+```
+
+### DOM Morphing
+
+Reconcile live DOM against new HTML without destroying state, focus, or event listeners.
+
+```js
+import { morph } from 'almostnojs';
+
+morph(document.getElementById('app'), '<div class="updated">New content</div>');
+```
+
+### Custom Elements
+
+Build reactive web components with `AnJSElement`.
+
+```js
+import { AnJSElement, html, registerComponent } from 'almostnojs';
+
+class MyCounter extends AnJSElement {
+    setup() {
+        this.state.count = 0;
+    }
+
+    render() {
+        return html`
+            <button @click=${() => this.state.count++}>
+                Clicked ${this.state.count} times
+            </button>`;
+    }
+}
+
+registerComponent('my-counter', MyCounter);
+```
 
 ```html
-<!-- AlmostNo.js (Full) - Choose ONE CDN -->
-
-<!-- jsDelivr -->
-<script src="https://cdn.jsdelivr.net/npm/almostnojs@latest/dist/cdn/almostno.full.js"></script>
-
-<!-- UNPKG -->
-<script src="https://unpkg.com/almostnojs@latest/dist/cdn/almostno.full.js"></script>
-
+<my-counter></my-counter>
 ```
 
-## Basic Usage
-AlmostNo.js provides a simple and intuitive API for common tasks.
+Features: reactive state proxy, batched microtask updates, computed properties, `observedAttributes` reflection, `setup()` and `destroy()` lifecycle hooks.
 
-### Select Elements
+### DOM Manipulation
+
 ```js
 $('div').text('Hello, World!');
+$('#box').css('color', 'red').class('highlight');
 ```
 
-### Handle Events
+### Events
+
 ```js
-$('#button').on('click', () => alert('Clicked!'));
+$('#btn').on('click', () => alert('Clicked!'));
+$.emit('app:ready', { ts: Date.now() });
+$.listen('app:ready', data => console.log(data));
 ```
 
 ### State Management
+
 ```js
-// Create a state object
 const state = $('#app').state({ count: 0 });
-
-// Automatically updates the UI when state changes
 $('#increment').on('click', () => state.count++);
-
-// Bind state directly to an element
-$('#count-display').bind(state);
+$('#display').bind(state);
 ```
 
 ```html
-<!-- HTML -->
 <div id="app">
-  <span id="count-display" data-bind="count"></span>
-  <button id="increment">Increase</button>
+    <span id="display" data-bind="count"></span>
+    <button id="increment">+1</button>
 </div>
 ```
 
 ### Components
 
-Create reusable components with ease. Here's a quick tutorial on how to define and use components.
-
-#### **Defining a Component**
-
-To define a component, use the `$.component` method. You need to provide a name, a template function, an optional state function, and optional event handlers.
-
 ```js
-// Define a Card component
 $.component("Card",
     ({ state, props }) => `
         <div class="card">
             <h3>${props.title}</h3>
-            <p>${props.content}</p>
-            <p>Likes: <span data-bind-this="likeCount"></span></p>
-            <p>SharedCount: <span data-bind="cards.shareCount"></span></p>
+            <p>Likes: <span data-bind-this="likes"></span></p>
             <button data-action="like">Like</button>
-            <button data-action="cards.share">Share</button>
         </div>`,
-    () => $.state({ likeCount: 0, like() { this.likeCount++ } })
+    () => $.state({ likes: 0, like() { this.likes++ } })
 );
 ```
 
-#### **Using a Component**
-
-Once defined, you can use the component in your HTML by simply including its tag.
-
 ```html
-<!-- HTML -->
-<div id="app">
-  <Card title="First Card" content="Auto-mounted!"></Card>
-</div>
+<Card title="Hello"></Card>
 ```
 
-#### **Handling Global State**
-
-You can define global state that can be shared across multiple components.
+### HTTP Requests
 
 ```js
-// Define global state
-$.global("shared", { count: 0, increment() { this.count++ } });
+$.get('/api/data').then(console.log);
+$.post('/api/submit', { name: 'Jane' });
+$.get('/api/slow', { timeout: 3000 });
 ```
 
-### Perform HTTP Requests
+## API Reference
 
-#### **GET Request**
-```js
-$.get('/api/data')
-  .then(response => console.log(response))
-  .catch(error => console.error('Request failed:', error));
-```
+### Template Parts
 
-#### **POST Request with JSON Data**
-```js
-$.post('/api/submit', { name: 'John Doe', email: 'john@example.com' })
-  .then(response => console.log('Success:', response))
-  .catch(error => console.error('Error:', error));
-```
+| Function | Description |
+|----------|-------------|
+| `` html`...` `` | Tagged template literal — returns a `TemplateResult` |
+| `render(result, container)` | Render a `TemplateResult` into a DOM element |
+| `clearTemplate(container)` | Clear cached template data for a container |
+| `unsafeHTML(string)` | Mark a string as trusted HTML (bypasses escaping) |
 
-#### **PUT Request**
-```js
-$.put('/api/update', { id: 123, status: 'active' })
-  .then(response => console.log('Updated:', response))
-  .catch(error => console.error('Update failed:', error));
-```
+### DOM Morphing
 
-#### **DELETE Request**
-```js
-$.delete('/api/remove?id=123')
-  .then(response => console.log('Deleted:', response))
-  .catch(error => console.error('Delete failed:', error));
-```
+| Function | Description |
+|----------|-------------|
+| `morph(target, newHTML)` | Reconcile live DOM to match new HTML string |
 
-#### **Custom Headers**
-```js
-$.get('/api/protected', { headers: { Authorization: 'Bearer TOKEN' } })
-  .then(response => console.log(response))
-  .catch(error => console.error('Request failed:', error));
-```
+### Custom Elements
 
-#### **Handling Timeouts**
-```js
-$.get('/api/slow-response', { timeout: 3000 }) // Auto-aborts after 3 seconds
-  .then(response => console.log(response))
-  .catch(error => console.error('Request timed out:', error));
-```
+| Export | Description |
+|--------|-------------|
+| `AnJSElement` | Base class for reactive custom elements |
+| `registerComponent(name, cls)` | Register a custom element (idempotent) |
 
-## API
+#### `AnJSElement` Instance API
+
+| Member | Description |
+|--------|-------------|
+| `state` | Reactive proxy — property writes trigger batched updates |
+| `computed(name, deps, fn)` | Define a computed property |
+| `render()` | Return `html`\`...\` or a string — called on every update |
+| `update()` | Force a synchronous DOM update |
+| `setup()` | Lifecycle hook — called once after first render |
+| `destroy()` | Lifecycle hook — called on `disconnectedCallback` |
 
 ### Core
+
 - `$(selector)` – Select elements.
 - `$.extend(name, func, force)` – Extend AlmostNo.js.
 
 ### Iteration
-- `.each(fn)` – Iterate over elements.
+
+- `.each(fn)` – Iterate over matched elements.
 - `.get(index)` – Get an element by index.
 - `.clone(deep)` – Clone an element.
 
 ### DOM Manipulation
+
 - `.content(value, html)` – Get/set text or HTML content.
 - `.text(value)` – Get/set text content.
 - `.html(value)` – Get/set HTML content.
 - `.css(prop, value)` – Get/set CSS styles.
 - `.class(name, add)` – Add, remove, or toggle classes.
 - `.display(show)` – Show or hide elements.
+- `.hide()` / `.show()` – Convenience hide/show.
 - `.remove()` – Remove elements from the DOM.
 - `.empty()` – Remove all child elements.
-- `.insert(content, position)` – Insert elements.
-- `.focus()` – Focus on the first matched element.
-- `.blur()` – Remove focus from the first matched element.
+- `.insert(content, position)` – Insert elements at a position.
+- `.append(content)` / `.prepend(content)` – Insert content at start/end.
+- `.before(content)` / `.after(content)` – Insert adjacent content.
+- `.prop(name, value)` – Get/set DOM properties.
+- `.val(value)` – Get/set form element values.
+- `.focus()` / `.blur()` – Focus and blur.
 
 ### Attributes
+
 - `.id(value)` – Get/set the `id` attribute.
 - `.attr(name, value)` – Get/set attributes.
 - `.removeAttr(name)` – Remove an attribute.
-- `.prop(name, value)` – Get/set properties.
-- `.val(value)` – Get/set the value of form elements.
-
-### Events
-- `.on(event, selector, handler)` – Attach event listeners.
-- `.off(event, selector, handler)` – Remove event listeners.
-- `.delegate(event, selector, handler)` – Attach delegated event listeners.
-- `.undelegate(event, selector, handler)` – Remove delegated event listeners.
-- `.trigger(event)` – Trigger an event.
-
-### Event Bus
-- `bus.emit(event, data)` – Emit a global event.
-- `bus.listen(event, handler)` – Listen for a global event.
-- `bus.forget(event, handler)` – Remove a global event listener.
-
-### Traversal
-- `.next()` – Get the next sibling.
-- `.prev()` – Get the previous sibling.
-- `.parent()` – Get the parent element.
-- `.children()` – Get child elements.
-- `.siblings()` – Get sibling elements.
-- `.closest(selector)` – Get the closest matching ancestor.
-
-### Filtering
-- `.filter(callbackOrSelector)` – Filter elements.
-- `.find(selector)` – Find child elements.
-- `.first()` – Get the first matched element.
-- `.last()` – Get the last matched element.
-- `.even()` – Get even-indexed elements.
-- `.odd()` – Get odd-indexed elements.
-- `.has(className)` – Check if an element has a class.
-
-### Forms
 - `.serialize()` – Serialize a form.
 
+### Events
+
+- `.on(event, selector?, handler)` – Attach event listeners (optional delegation).
+- `.off(event, selector?, handler)` – Remove event listeners.
+- `.delegate(event, selector, handler)` – Delegated event listener.
+- `.undelegate(event, selector, handler)` – Remove delegated listener.
+- `.trigger(event)` – Dispatch an event.
+
+### Event Bus
+
+- `$.emit(event, data)` – Emit a global event.
+- `$.listen(event, handler)` – Listen for a global event.
+- `$.forget(event, handler)` – Remove a global event listener.
+
+### Traversal
+
+- `.next()` / `.prev()` – Adjacent siblings.
+- `.parent()` – Parent element.
+- `.children()` – Direct children.
+- `.siblings()` – All siblings.
+- `.closest(selector)` – Closest matching ancestor.
+
+### Filtering
+
+- `.filter(callbackOrSelector)` – Filter elements.
+- `.find(selector)` – Find descendants.
+- `.first()` / `.last()` – First or last element.
+- `.even()` / `.odd()` – Even or odd indexed elements.
+- `.has(className)` – Check for a class.
+
 ### Animations
+
 - `.animate(styles, duration, easing)` – Animate CSS properties.
-- `.fade(opacity, duration)` – Fade elements in or out.
-- `.fadeIn(duration)` – Fade elements in.
-- `.fadeOut(duration)` – Fade elements out.
+- `.fade(opacity, duration)` – Fade to a specific opacity.
+- `.fadeIn(duration)` / `.fadeOut(duration)` – Fade in/out.
 
 ### State Management
-- `.state(initialState)` – Create a state object.
-- `.bind(state, context)` – Bind state values to the DOM.
+
+- `.state(initialState)` – Create a reactive state proxy.
+- `.bind(state, context)` – Bind state to DOM via `data-bind`.
 - `.unbind(state)` – Remove bindings.
-- `.global(name, initial)` – Retrieve or create a global state.
-- `.hasGlobal(name)` – Check if a global state exists.
-- `.clearGlobal(name)` – Remove a global state from memory and storage.
+- `$.global(name, initial)` – Create or retrieve global state.
+- `$.hasGlobal(name)` – Check if a global state exists.
+- `$.clearGlobal(name)` – Remove a global state.
 
 ### HTTP Requests
-- `$.get(url, options)` – Perform a GET request.
-- `$.post(url, data, options)` – Perform a POST request.
-- `$.put(url, data, options)` – Perform a PUT request.
-- `$.delete(url, options)` – Perform a DELETE request.
-- `$.patch(url, data, options)` – Perform a PATCH request.
-- `$.abortController()` – Create an abort controller.
+
+- `$.get(url, options)` – GET request.
+- `$.post(url, data, options)` – POST request.
+- `$.put(url, data, options)` – PUT request.
+- `$.delete(url, options)` – DELETE request.
+- `$.patch(url, data, options)` – PATCH request.
+- `$.head(url, options)` – HEAD request.
+- `$.options(url, options)` – OPTIONS request.
+- `$.abortController()` – Create an AbortController.
 
 ### Utilities
-- `$.json(string)` – Parse JSON safely, returns `null` on failure.
-- `$.trim(string)` – Trim whitespace from a string.
-- `$.range(x, min, max)` – Check if a number is within a range.
-- `$.isFunction(obj)` – Check if a value is a function.
-- `$.isObject(obj)` – Check if a value is a plain object.
-- `$.isString(obj)` – Check if a value is a string.
-- `$.isNumber(obj)` – Check if a value is a number (excluding `NaN`).
-- `$.contains(parent, child)` – Check if a parent element contains a child element.
-- `$.debounce(fn, delay)` – Create a debounced function that delays execution.
-- `$.throttle(fn, limit)` – Create a throttled function that limits execution.
-- `$.element(tag, attrs, children)` – Create an HTML element with attributes and children.
 
-### Aliases
-- `.append(content)` – Insert content at the end of each element.
-- `.prepend(content)` – Insert content at the beginning of each element.
-- `.before(content)` – Insert content before each element.
-- `.after(content)` – Insert content after each element.
-- `.click(callback)` – Attach or trigger a `click` event.
-- `.change(callback)` – Attach or trigger a `change` event.
-- `.submit(callback)` – Attach or trigger a `submit` event.
-- `.keydown(callback)` – Attach or trigger a `keydown` event.
-- `.keyup(callback)` – Attach or trigger a `keyup` event.
-- `.mouseover(callback)` – Attach or trigger a `mouseover` event.
-- `.mouseout(callback)` – Attach or trigger a `mouseout` event.
-- `.hide()` – Hide elements.
-- `.show()` – Show elements.
+- `$.json(string)` – Safe JSON parse (returns `null` on failure).
+- `$.trim(string)` – Trim whitespace.
+- `$.range(x, min, max)` – Check if a number is within range.
+- `$.isFunction(v)` / `$.isObject(v)` / `$.isString(v)` / `$.isNumber(v)` – Type checks.
+- `$.contains(parent, child)` – Check DOM containment.
+- `$.debounce(fn, delay)` – Debounced function.
+- `$.throttle(fn, limit)` – Throttled function.
+- `$.element(tag, attrs, children)` – Create an element.
+
+### Event Aliases
+
+- `.click(cb)` / `.change(cb)` / `.submit(cb)` / `.keydown(cb)` / `.keyup(cb)` / `.mouseover(cb)` / `.mouseout(cb)` – Event shortcuts.
 
 ## Why AlmostNo.js?
-- **Modern & Minimalist** – Small size, no legacy baggage.
-- **Easy to Learn** – Simple, intuitive API for quick adoption.
-- **Fast & Lightweight** – Ideal for performance-sensitive applications.
-- **Great Features** – Includes DOM manipulation, events, animations, state, and components.
-- **Convenient Fetch API** – Provides wrappers over `fetch` with optional timeout handling.
-- **Flexible & Extensible** – Easily extend functionality with custom methods and components.
-- **Reactive State Management** – Lightweight state bindings for creating reactive applications.
-- **Reusable Components** – Create and use reusable components with ease.
+
+- **Modern & Minimal** – No legacy baggage. ES2020 modules with tree-shaking.
+- **Tagged Templates** – Lit-inspired rendering without a build step.
+- **DOM Morphing** – Efficient reconciliation without virtual DOM overhead.
+- **Custom Elements** – First-class web component support.
+- **Reactive State** – Proxy-based reactivity with automatic DOM updates.
+- **Easy to Learn** – Familiar jQuery-style API with modern capabilities.
+- **Fast & Lightweight** – 5–12 KB gzipped depending on bundle.
+- **Extensible** – Add custom methods, components, and global state.
 
 ## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.

@@ -50,7 +50,7 @@ const VARIANTS = {
         outputBrowser: './dist/browser/almostno.full.js',
         outputCDN: './dist/cdn/almostno.full.min.js',
         format: "iife",
-        defines: { state: true, components: true, elements: false },
+        defines: { state: true, components: true, elements: true },
         sourcemap: true
     },
 

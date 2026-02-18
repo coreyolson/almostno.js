@@ -25,3 +25,6 @@ Thumbs.db
 *.swp
 *.swpx
 *~
+
+# AI
+AI_USAGE.md

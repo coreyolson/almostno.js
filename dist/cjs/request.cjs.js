@@ -1,4 +1,4 @@
-/* AlmostNo.js v1.1.3 Request (CJS) */
+/* AlmostNo.js v1.2.0 Request (CJS) */
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
