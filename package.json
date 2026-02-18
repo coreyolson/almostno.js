@@ -1,6 +1,6 @@
 {
   "name": "almostnojs",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A minimalist, dependency-free JavaScript framework featuring tagged template rendering, DOM morphing, custom elements, state management, event handling, animations, and HTTP requests.",
   "keywords": [
     "javascript",

@@ -1,4 +1,4 @@
-/* AlmostNo.js v1.2.0 Full */
+/* AlmostNo.js v1.2.1 Full */
 (() => {
   var __defProp = Object.defineProperty;
   var __getOwnPropNames = Object.getOwnPropertyNames;
@@ -511,7 +511,12 @@
     }
     let instance = templateCache.get(container);
     if (!instance || instance.strings !== result.strings) {
-      const markup = result.strings.reduce((acc, str, i) => acc + str + (i < result.values.length ? markerFor(i) : ""), "");
+      const markup = result.strings.reduce((acc, str, i) => {
+        if (i >= result.values.length) return acc + str;
+        const marker = markerFor(i);
+        if (/=\s*$/.test(str)) return acc + str + '"' + marker + '"';
+        return acc + str + marker;
+      }, "");
       const tpl = document.createElement("template");
       tpl.innerHTML = markup;
       const parts = [];
@@ -638,13 +643,21 @@
         if (part.statics) {
           const statics = part.statics;
           const indices = part.attrIndices;
-          let assembled = statics[0];
-          for (let k = 0; k < indices.length; k++) {
-            const v = newValues[indices[k]];
-            assembled += v == null || v === false ? "" : String(v);
-            assembled += statics[k + 1];
+          if (indices.length === 1 && statics[0] === "" && statics[1] === "" && typeof newVal === "boolean") {
+            if (newVal) {
+              part.node.setAttribute(part.name, "");
+            } else {
+              part.node.removeAttribute(part.name);
+            }
+          } else {
+            let assembled = statics[0];
+            for (let k = 0; k < indices.length; k++) {
+              const v = newValues[indices[k]];
+              assembled += v == null || v === false ? "" : String(v);
+              assembled += statics[k + 1];
+            }
+            part.node.setAttribute(part.name, assembled);
           }
-          part.node.setAttribute(part.name, assembled);
         } else {
           if (newVal === true) {
             part.node.setAttribute(part.name, "");

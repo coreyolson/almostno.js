@@ -90,8 +90,16 @@ export function render(result, container) {
     if (!instance || instance.strings !== result.strings) {
 
         // Build full HTML string for initial parse
-        const markup = result.strings.reduce((acc, str, i) =>
-            acc + str + (i < result.values.length ? markerFor(i) : ""), "");
+        // Note: When a marker lands in an unquoted attribute position (e.g. checked=${val}),
+        // wrap the marker in quotes so the HTML parser handles it correctly.
+        const markup = result.strings.reduce((acc, str, i) => {
+            if (i >= result.values.length) return acc + str;
+            const marker = markerFor(i);
+
+            // Detect unquoted attribute context: string ends with = (optionally with whitespace)
+            if (/=\s*$/.test(str)) return acc + str + '"' + marker + '"';
+            return acc + str + marker;
+        }, "");
 
         // Parse into a template element (inert, no scripts execute)
         const tpl = document.createElement('template');
@@ -339,16 +347,28 @@ function commitValues(instance, newValues) {
             // Reconstruct full attribute value from statics + all dynamic values
             if (part.statics) {
 
-                // Build value: static[0] + val[0] + static[1] + val[1] + ... + static[n]
+                // Boolean attribute shortcut: checked=${true/false}, disabled=${bool}, etc.
+                // When the expression is the entire attribute value (empty statics on both sides)
+                // and the value is boolean, toggle attribute presence instead of setting a string.
                 const statics = part.statics;
                 const indices = part.attrIndices;
-                let assembled = statics[0];
-                for (let k = 0; k < indices.length; k++) {
-                    const v = newValues[indices[k]];
-                    assembled += (v == null || v === false ? '' : String(v));
-                    assembled += statics[k + 1];
+                if (indices.length === 1 && statics[0] === '' && statics[1] === '' && typeof newVal === 'boolean') {
+                    if (newVal) {
+                        part.node.setAttribute(part.name, '');
+                    } else {
+                        part.node.removeAttribute(part.name);
+                    }
+                } else {
+
+                    // Build value: static[0] + val[0] + static[1] + val[1] + ... + static[n]
+                    let assembled = statics[0];
+                    for (let k = 0; k < indices.length; k++) {
+                        const v = newValues[indices[k]];
+                        assembled += (v == null || v === false ? '' : String(v));
+                        assembled += statics[k + 1];
+                    }
+                    part.node.setAttribute(part.name, assembled);
                 }
-                part.node.setAttribute(part.name, assembled);
 
             /* istanbul ignore else — walkTemplate always provides statics */
             } else {
